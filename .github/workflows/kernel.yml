@@ -19,6 +19,13 @@ jobs:
         with:
           path: patches
 
+      - name: Clean Kernel Source
+        run: |
+          cd kernel
+          git clean -fdx
+          git checkout -- .
+          rm -rf out/ include/config/ .config
+
       - name: Apply Patches
         run: |
           cp patches/include/dt-bindings/clock/mt6769-clk.h kernel/include/dt-bindings/clock/
@@ -49,11 +56,6 @@ jobs:
       - name: Configure
         run: |
           cd kernel
-          # Clean any leftover state from git clone
-          git clean -fdx
-          git checkout -- .
-          make mrproper 2>/dev/null || true
-          rm -rf out/ include/config/ .config
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
           echo "Config options: $(grep -c '=y\|=m' .config)"
 
