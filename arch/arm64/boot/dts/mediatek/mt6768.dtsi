@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * MediaTek MT6768 SoC device tree source include
- * Minimal version for initial boot
+ * Comprehensive version with Phase 2 hardware
  */
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -115,6 +115,7 @@
 			#interrupt-cells = <3>;
 		};
 
+		/* UART0 - Serial console */
 		uart0: serial@11002000 {
 			compatible = "mediatek,mt6577-uart";
 			reg = <0 0x11002000 0 0x1000>;
@@ -122,6 +123,66 @@
 			status = "okay";
 		};
 
+		/* UART1 */
+		uart1: serial@11003000 {
+			compatible = "mediatek,mt6577-uart";
+			reg = <0 0x11003000 0 0x1000>;
+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
+			status = "disabled";
+		};
+
+		/* UART2 */
+		uart2: serial@11004000 {
+			compatible = "mediatek,mt6577-uart";
+			reg = <0 0x11004000 0 0x1000>;
+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
+			status = "disabled";
+		};
+
+		/* I2C0 */
+		i2c0: i2c@11007000 {
+			compatible = "mediatek,mt6577-i2c";
+			reg = <0 0x11007000 0 0x1000>,
+			      <0 0x10217000 0 0x1000>;
+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_LOW>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		/* I2C1 */
+		i2c1: i2c@11008000 {
+			compatible = "mediatek,mt6577-i2c";
+			reg = <0 0x11008000 0 0x1000>,
+			      <0 0x10217000 0 0x1000>;
+			interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_LOW>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		/* I2C2 */
+		i2c2: i2c@11009000 {
+			compatible = "mediatek,mt6577-i2c";
+			reg = <0 0x11009000 0 0x1000>,
+			      <0 0x10217000 0 0x1000>;
+			interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_LOW>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		/* SPI0 */
+		spi0: spi@1100a000 {
+			compatible = "mediatek,mt6589-spi";
+			reg = <0 0x1100a000 0 0x1000>;
+			interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_LOW>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		/* eMMC/SD controller 0 */
 		mmc0: mmc@11230000 {
 			compatible = "mediatek,mt2712-mmc";
 			reg = <0 0x11230000 0 0x1000>,
@@ -130,6 +191,25 @@
 			status = "okay";
 		};
 
+		/* eMMC/SD controller 1 */
+		mmc1: mmc@11240000 {
+			compatible = "mediatek,mt2712-mmc";
+			reg = <0 0x11240000 0 0x1000>,
+			      <0 0x11c30000 0 0x1000>;
+			interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_LOW>;
+			status = "disabled";
+		};
+
+		/* eMMC/SD controller 2 */
+		mmc2: mmc@11250000 {
+			compatible = "mediatek,mt2712-mmc";
+			reg = <0 0x11250000 0 0x1000>,
+			      <0 0x11c40000 0 0x1000>;
+			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_LOW>;
+			status = "disabled";
+		};
+
+		/* USB 3.0/OTG */
 		usb: usb@11200000 {
 			compatible = "mediatek,mtk-mtu3";
 			reg = <0 0x11200000 0 0x3000>;
@@ -138,26 +218,31 @@
 			status = "okay";
 		};
 
+		/* Infrastructure syscon */
 		infracfg: syscon@10001000 {
 			compatible = "mediatek,mt6768-infracfg", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
 		};
 
+		/* Top clock generator syscon */
 		topckgen: syscon@10000000 {
 			compatible = "mediatek,mt6768-topckgen", "syscon";
 			reg = <0 0x10000000 0 0x1000>;
 		};
 
+		/* APMixed PLL syscon */
 		apmixedsys: syscon@1000c000 {
 			compatible = "mediatek,mt6768-apmixedsys", "syscon";
 			reg = <0 0x1000c000 0 0x1000>;
 		};
 
+		/* Power controller syscon */
 		scpsys: syscon@10006000 {
 			compatible = "mediatek,mt6768-scpsys", "syscon";
 			reg = <0 0x10006000 0 0x1000>;
 		};
 
+		/* Pin controller */
 		pinctrl: pinctrl@10005000 {
 			compatible = "mediatek,mt6768-pinctrl";
 			reg = <0 0x10005000 0 0x1000>;
@@ -169,6 +254,7 @@
 			#interrupt-cells = <2>;
 		};
 
+		/* PMIC wrapper */
 		pwrap: pwrap@1000d000 {
 			compatible = "mediatek,mt6768-pwrap";
 			reg = <0 0x1000d000 0 0x1000>;
@@ -182,6 +268,7 @@
 			};
 		};
 
+		/* Thermal sensor */
 		thermal: thermal@1100b000 {
 			compatible = "mediatek,mt2701-thermal";
 			reg = <0 0x1100b000 0 0x1000>;
@@ -190,6 +277,7 @@
 			status = "okay";
 		};
 
+		/* Mali GPU */
 		mali: gpu@13040000 {
 			compatible = "arm,mali-g52";
 			reg = <0 0x13040000 0 0x10000>;

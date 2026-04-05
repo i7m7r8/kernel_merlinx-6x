@@ -2,11 +2,15 @@
 /*
  * Device Tree for Redmi Note 9 (merlinx - non-NFC)
  * SoC: MediaTek MT6769Z (Helio G85)
+ * Display: 1080x2340
+ * Storage: eMMC 5.1 + SD card
+ * USB: Type-C OTG
  */
 
 /dts-v1/;
 #include "mt6768.dtsi"
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
 
 / {
 	model = "Xiaomi Redmi Note 9 (merlinx)";
@@ -14,16 +18,67 @@
 
 	memory@40000000 {
 		device_type = "memory";
-		reg = <0x00000000 0x40000000 0x00000001 0x00000000>; /* 4GB */
+		reg = <0x00000000 0x40000000 0x00000001 0x00000000>;
+	};
+
+	chosen {
+		bootargs = "console=ttyS0,921600n1 earlycon=uart8250,mmio32,0x11002000,921600n8";
+		stdout-path = "uart0:921600n8";
 	};
 };
 
+/* eMMC - 8-bit, HS400 */
 &mmc0 {
 	bus-width = <8>;
+	max-frequency = <200000000>;
 	cap-mmc-highspeed;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
 	non-removable;
+	status = "okay";
 };
 
+/* SD Card - 4-bit */
+&mmc1 {
+	bus-width = <4>;
+	max-frequency = <50000000>;
+	cap-sd-highspeed;
+	cd-gpios = <&pinctrl 18 GPIO_ACTIVE_LOW>;
+	status = "okay";
+};
+
+/* UART0 console */
 &uart0 {
+	status = "okay";
+};
+
+/* I2C0 - Touchscreen, etc */
+&i2c0 {
+	status = "okay";
+};
+
+/* I2C1 - PMIC, sensors */
+&i2c1 {
+	status = "okay";
+};
+
+/* I2C2 - Camera sensors */
+&i2c2 {
+	status = "okay";
+};
+
+/* SPI0 */
+&spi0 {
+	status = "okay";
+};
+
+/* USB OTG */
+&usb {
+	dr_mode = "otg";
+	status = "okay";
+};
+
+/* Thermal sensor */
+&thermal {
 	status = "okay";
 };
