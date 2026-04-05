@@ -406,7 +406,7 @@
 			compatible = "mediatek,mt6769z-pinctrl", "mediatek,mt6769-pinctrl", "mediatek,mt6768-pinctrl";
 			reg = <0 0x10005000 0 0x1000>;
 			gpio-controller;
-			gpio-ranges = <&pinctrl 0 0 186>;
+			gpio-ranges = <&pinctrl 0 0 187>;
 			#gpio-cells = <2>;
 			interrupt-controller;
 			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
