@@ -56,8 +56,8 @@ jobs:
       - name: Configure
         run: |
           cd kernel
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
-          echo "Config options: $(grep -c '=y\|=m' .config)"
+          make O=../build ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
+          echo "Config options: $(grep -c '=y\|=m' ../build/.config)"
 
       - name: Build Kernel
         id: build
@@ -65,7 +65,7 @@ jobs:
           cd kernel
           export CCACHE_DIR=$HOME/.ccache
           START=$(date +%s)
-          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache aarch64-linux-gnu-gcc" Image modules dtbs
+          make -j$(nproc) O=../build ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache aarch64-linux-gnu-gcc" Image modules dtbs
           END=$(date +%s)
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
           echo "Build done in $((END - START))s"
@@ -76,12 +76,12 @@ jobs:
           git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git AnyKernel3
           cd AnyKernel3
           rm -f Image* dtb*
-          if [ -f ../kernel/out/arch/arm64/boot/Image.gz ]; then
-            cp ../kernel/out/arch/arm64/boot/Image.gz .
-          elif [ -f ../kernel/out/arch/arm64/boot/Image ]; then
-            cp ../kernel/out/arch/arm64/boot/Image .
+          if [ -f ../build/arch/arm64/boot/Image.gz ]; then
+            cp ../build/arch/arm64/boot/Image.gz .
+          elif [ -f ../build/arch/arm64/boot/Image ]; then
+            cp ../build/arch/arm64/boot/Image .
           fi
-          cp ../kernel/out/arch/arm64/boot/dts/mediatek/*.dtb . 2>/dev/null || true
+          cp ../build/arch/arm64/boot/dts/mediatek/*.dtb . 2>/dev/null || true
 
           cat > anykernel.sh << 'EOF'
           kernel.string=MerlinX-Kernel-6.12
