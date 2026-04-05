@@ -67,7 +67,7 @@ jobs:
           echo "=== Building MerlinX Kernel 6.12 ==="
           export CCACHE_DIR=$HOME/.ccache
           START=$(date +%s)
-          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache aarch64-linux-gnu-gcc" Image.gz-dtb modules
+          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache aarch64-linux-gnu-gcc" Image modules dtbs
           END=$(date +%s)
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
           echo "=== Build Complete in $((END - START)) seconds ==="
@@ -77,9 +77,7 @@ jobs:
         run: |
           cd kernel
           mkdir -p output
-          if [ -f out/arch/arm64/boot/Image.gz-dtb ]; then
-            cp out/arch/arm64/boot/Image.gz-dtb output/
-          elif [ -f out/arch/arm64/boot/Image.gz ]; then
+          if [ -f out/arch/arm64/boot/Image.gz ]; then
             cp out/arch/arm64/boot/Image.gz output/
           elif [ -f out/arch/arm64/boot/Image ]; then
             cp out/arch/arm64/boot/Image output/
