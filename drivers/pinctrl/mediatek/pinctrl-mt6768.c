@@ -3,6 +3,7 @@
  * MediaTek MT6768/MT6769/MT6769Z Pin Controller Driver
  * Pin table extracted from vendor 4.14 source (Xiaomi OSS)
  * Converted for Linux 6.12 mainline pinctrl-paris framework
+ * Register ranges: MT6768-specific from vendor source
  */
 
 #include <linux/module.h>
@@ -12,8 +13,135 @@
 #include "pinctrl-paris.h"
 #include "pinctrl-mtk-common-v2.h"
 
+/* MT6768-specific register range tables (NOT MT6765) */
+static const struct mtk_pin_field_calc mt6768_pin_mode_range[] = {
+	PIN_FIELD_BASE(0, 7, 0, 0x0300, 0x10, 0, 4),
+	PIN_FIELD_BASE(8, 15, 0, 0x0310, 0x10, 0, 4),
+	PIN_FIELD_BASE(16, 23, 0, 0x0320, 0x10, 0, 4),
+	PIN_FIELD_BASE(24, 31, 0, 0x0330, 0x10, 0, 4),
+	PIN_FIELD_BASE(32, 39, 0, 0x0340, 0x10, 0, 4),
+	PIN_FIELD_BASE(40, 47, 0, 0x0350, 0x10, 0, 4),
+	PIN_FIELD_BASE(48, 55, 0, 0x0360, 0x10, 0, 4),
+	PIN_FIELD_BASE(56, 63, 0, 0x0370, 0x10, 0, 4),
+	PIN_FIELD_BASE(64, 71, 0, 0x0380, 0x10, 0, 4),
+	PIN_FIELD_BASE(72, 79, 0, 0x0390, 0x10, 0, 4),
+	PIN_FIELD_BASE(80, 87, 0, 0x03A0, 0x10, 0, 4),
+	PIN_FIELD_BASE(88, 95, 0, 0x03B0, 0x10, 0, 4),
+	PIN_FIELD_BASE(96, 103, 0, 0x03C0, 0x10, 0, 4),
+	PIN_FIELD_BASE(104, 111, 0, 0x03D0, 0x10, 0, 4),
+	PIN_FIELD_BASE(112, 119, 0, 0x03E0, 0x10, 0, 4),
+	PIN_FIELD_BASE(120, 127, 0, 0x03F0, 0x10, 0, 4),
+	PIN_FIELD_BASE(128, 135, 0, 0x0400, 0x10, 0, 4),
+	PIN_FIELD_BASE(136, 143, 0, 0x0410, 0x10, 0, 4),
+	PIN_FIELD_BASE(144, 151, 0, 0x0420, 0x10, 0, 4),
+	PIN_FIELD_BASE(152, 159, 0, 0x0430, 0x10, 0, 4),
+	PIN_FIELD_BASE(160, 167, 0, 0x0440, 0x10, 0, 4),
+	PIN_FIELD_BASE(168, 175, 0, 0x0450, 0x10, 0, 4),
+	PIN_FIELD_BASE(176, 176, 0, 0x0460, 0x10, 0, 4),
+	PIN_FIELD_BASE(177, 179, 0, 0x0460, 0x10, 3, 1),
+};
+
+static const struct mtk_pin_field_calc mt6768_pin_dir_range[] = {
+	PIN_FIELD_BASE(0, 31, 0, 0x0000, 0x10, 0, 1),
+	PIN_FIELD_BASE(32, 63, 0, 0x0010, 0x10, 0, 1),
+	PIN_FIELD_BASE(64, 95, 0, 0x0020, 0x10, 0, 1),
+	PIN_FIELD_BASE(96, 127, 0, 0x0030, 0x10, 0, 1),
+	PIN_FIELD_BASE(128, 159, 0, 0x0040, 0x10, 0, 1),
+	PIN_FIELD_BASE(160, 179, 0, 0x0050, 0x10, 0, 1),
+};
+
+static const struct mtk_pin_field_calc mt6768_pin_ies_range[] = {
+	PIN_FIELD_BASE(0, 0, 5, 0x0060, 0x10, 7, 1),
+	PIN_FIELD_BASE(1, 1, 5, 0x0060, 0x10, 8, 1),
+	PIN_FIELD_BASE(2, 2, 5, 0x0060, 0x10, 10, 1),
+	PIN_FIELD_BASE(3, 3, 5, 0x0060, 0x10, 11, 1),
+	PIN_FIELD_BASE(4, 4, 5, 0x0060, 0x10, 12, 1),
+	PIN_FIELD_BASE(5, 5, 5, 0x0060, 0x10, 13, 1),
+	PIN_FIELD_BASE(6, 6, 5, 0x0060, 0x10, 14, 1),
+	PIN_FIELD_BASE(7, 7, 5, 0x0060, 0x10, 15, 1),
+	PIN_FIELD_BASE(8, 8, 5, 0x0060, 0x10, 16, 1),
+	PIN_FIELD_BASE(9, 9, 5, 0x0060, 0x10, 17, 1),
+	PIN_FIELD_BASE(10, 10, 5, 0x0060, 0x10, 9, 1),
+	PIN_FIELD_BASE(11, 11, 5, 0x0070, 0x10, 1, 1),
+	PIN_FIELD_BASE(12, 12, 5, 0x0060, 0x10, 24, 1),
+	PIN_FIELD_BASE(13, 13, 2, 0x0020, 0x10, 20, 1),
+	PIN_FIELD_BASE(14, 14, 2, 0x0020, 0x10, 19, 1),
+	PIN_FIELD_BASE(15, 15, 2, 0x0020, 0x10, 21, 1),
+	PIN_FIELD_BASE(16, 16, 2, 0x0020, 0x10, 18, 1),
+	PIN_FIELD_BASE(17, 17, 2, 0x0020, 0x10, 16, 1),
+	PIN_FIELD_BASE(18, 18, 2, 0x0020, 0x10, 15, 1),
+	PIN_FIELD_BASE(19, 19, 2, 0x0020, 0x10, 17, 1),
+};
+
+static const struct mtk_pin_field_calc mt6768_pin_pupd_range[] = {
+	PIN_FIELD_BASE(91, 91, 5, 0x0090, 0x10, 3, 1),
+	PIN_FIELD_BASE(92, 92, 5, 0x0090, 0x10, 2, 1),
+	PIN_FIELD_BASE(93, 93, 5, 0x0090, 0x10, 0, 1),
+	PIN_FIELD_BASE(94, 94, 5, 0x0090, 0x10, 1, 1),
+	PIN_FIELD_BASE(122, 122, 8, 0x0020, 0x10, 1, 1),
+	PIN_FIELD_BASE(123, 123, 8, 0x0020, 0x10, 2, 1),
+	PIN_FIELD_BASE(124, 124, 8, 0x0020, 0x10, 0, 1),
+	PIN_FIELD_BASE(125, 125, 8, 0x0020, 0x10, 4, 1),
+	PIN_FIELD_BASE(126, 126, 8, 0x0020, 0x10, 6, 1),
+	PIN_FIELD_BASE(127, 127, 8, 0x0020, 0x10, 8, 1),
+	PIN_FIELD_BASE(128, 128, 8, 0x0020, 0x10, 3, 1),
+	PIN_FIELD_BASE(129, 129, 8, 0x0020, 0x10, 7, 1),
+	PIN_FIELD_BASE(130, 130, 8, 0x0020, 0x10, 9, 1),
+};
+
+static const struct mtk_pin_field_calc mt6768_pin_r0_range[] = {
+	PIN_FIELD_BASE(91, 91, 5, 0x00B0, 0x10, 3, 1),
+	PIN_FIELD_BASE(92, 92, 5, 0x00B0, 0x10, 2, 1),
+	PIN_FIELD_BASE(93, 93, 5, 0x00B0, 0x10, 0, 1),
+	PIN_FIELD_BASE(94, 94, 5, 0x00B0, 0x10, 1, 1),
+	PIN_FIELD_BASE(122, 122, 8, 0x0030, 0x10, 1, 1),
+	PIN_FIELD_BASE(123, 123, 8, 0x0030, 0x10, 2, 1),
+	PIN_FIELD_BASE(124, 124, 8, 0x0030, 0x10, 0, 1),
+	PIN_FIELD_BASE(125, 125, 8, 0x0030, 0x10, 4, 1),
+	PIN_FIELD_BASE(126, 126, 8, 0x0030, 0x10, 6, 1),
+	PIN_FIELD_BASE(127, 127, 8, 0x0030, 0x10, 8, 1),
+	PIN_FIELD_BASE(128, 128, 8, 0x0030, 0x10, 3, 1),
+	PIN_FIELD_BASE(129, 129, 8, 0x0030, 0x10, 7, 1),
+	PIN_FIELD_BASE(130, 130, 8, 0x0030, 0x10, 9, 1),
+};
+
+static const struct mtk_pin_field_calc mt6768_pin_r1_range[] = {
+	PIN_FIELD_BASE(91, 91, 5, 0x00C0, 0x10, 3, 1),
+	PIN_FIELD_BASE(92, 92, 5, 0x00C0, 0x10, 2, 1),
+	PIN_FIELD_BASE(93, 93, 5, 0x00C0, 0x10, 0, 1),
+	PIN_FIELD_BASE(94, 94, 5, 0x00C0, 0x10, 1, 1),
+	PIN_FIELD_BASE(122, 122, 8, 0x0040, 0x10, 1, 1),
+	PIN_FIELD_BASE(123, 123, 8, 0x0040, 0x10, 2, 1),
+	PIN_FIELD_BASE(124, 124, 8, 0x0040, 0x10, 0, 1),
+	PIN_FIELD_BASE(125, 125, 8, 0x0040, 0x10, 4, 1),
+	PIN_FIELD_BASE(126, 126, 8, 0x0040, 0x10, 6, 1),
+	PIN_FIELD_BASE(127, 127, 8, 0x0040, 0x10, 8, 1),
+	PIN_FIELD_BASE(128, 128, 8, 0x0040, 0x10, 3, 1),
+	PIN_FIELD_BASE(129, 129, 8, 0x0040, 0x10, 7, 1),
+	PIN_FIELD_BASE(130, 130, 8, 0x0040, 0x10, 9, 1),
+};
+
+static const struct mtk_pin_reg_calc mt6768_reg_cals[] = {
+	[PINCTRL_PIN_REG_MODE] = MTK_RANGE(mt6768_pin_mode_range),
+	[PINCTRL_PIN_REG_DIR] = MTK_RANGE(mt6768_pin_dir_range),
+	[PINCTRL_PIN_REG_PUPD] = MTK_RANGE(mt6768_pin_pupd_range),
+	[PINCTRL_PIN_REG_R0] = MTK_RANGE(mt6768_pin_r0_range),
+	[PINCTRL_PIN_REG_R1] = MTK_RANGE(mt6768_pin_r1_range),
+	[PINCTRL_PIN_REG_IES] = MTK_RANGE(mt6768_pin_ies_range),
+};
+
+static const char * const mt6768_pinctrl_register_base_names[] = {
+	"iocfg_lt", "iocfg_lm", "iocfg_lb", "iocfg_bl",
+	"iocfg_rm", "iocfg_rb", "iocfg_rt", "iocfg_tl", "eint",
+};
+
+static const struct mtk_eint_hw mt6768_eint_hw = {
+	.port_mask = 0x7,
+	.ports = 7,
+	.db_cnt = 13,
+};
+
 /* Complete 187-pin table (GPIO0-GPIO186) from vendor 4.14 source */
-static const struct mtk_pin_desc mtk_pins_mt6768[] = {
 	MTK_PIN(
 		0, "GPIO0",
 		MTK_EINT_FUNCTION(0, 0),
@@ -1722,25 +1850,6 @@ static const struct mtk_pin_desc mtk_pins_mt6768[] = {
 		MTK_PUPD_MASK_R1R0(0x80, 0x4),
 				MTK_FUNCTION(0, NULL)
 	),
-static const char * const mt6768_pinctrl_register_base_names[] = {
-	"iocfg_lt", "iocfg_lm", "iocfg_lb", "iocfg_bl",
-	"iocfg_rm", "iocfg_rb", "iocfg_rt", "iocfg_tl", "eint",
-};
-
-static const struct mtk_pin_reg_calc mt6768_reg_cals[PINCTRL_PIN_REG_MAX] = {
-	[PINCTRL_PIN_REG_MODE] = MTK_RANGE(mt6765_pin_mode_range),
-	[PINCTRL_PIN_REG_DIR] = MTK_RANGE(mt6765_pin_dir_range),
-	[PINCTRL_PIN_REG_PUPD] = MTK_RANGE(mt6765_pin_pupd_range),
-	[PINCTRL_PIN_REG_R0] = MTK_RANGE(mt6765_pin_r0_range),
-	[PINCTRL_PIN_REG_R1] = MTK_RANGE(mt6765_pin_r1_range),
-	[PINCTRL_PIN_REG_IES] = MTK_RANGE(mt6765_pin_ies_range),
-};
-
-static const struct mtk_eint_hw mt6768_eint_hw = {
-	.port_mask = 0x7,
-	.ports = 7,
-	.db_cnt = 13,
-};
 
 static const struct mtk_pin_soc mt6768_data = {
 	.reg_cal = mt6768_reg_cals,

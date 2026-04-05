@@ -387,6 +387,12 @@
 			reg = <0 0x10001000 0 0x1000>;
 		};
 
+		/* Second register bank for audio/modem clocks (bits 32-35) */
+		infracfg_ao: syscon@10001000 {
+			compatible = "mediatek,mt6769z-infracfg-ao", "mediatek,mt6769-infracfg-ao", "mediatek,mt6768-infracfg-ao", "syscon";
+			reg = <0 0x10001000 0 0x1000>;
+		};
+
 		topckgen: syscon@10000000 {
 			compatible = "mediatek,mt6769z-topckgen", "mediatek,mt6769-topckgen", "mediatek,mt6768-topckgen", "syscon";
 			reg = <0 0x10000000 0 0x1000>;
