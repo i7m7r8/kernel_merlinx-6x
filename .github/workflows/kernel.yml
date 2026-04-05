@@ -10,34 +10,35 @@ jobs:
     name: Compile Kernel 6.12-merlinx
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout Our Patches
-        uses: actions/checkout@v4
-
       - name: Download Linux 6.12 Source
         run: |
           echo "=== Downloading Linux 6.12 ==="
           wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.tar.xz -O /tmp/linux-6.12.tar.xz
-          mkdir -p linux
-          tar -xf /tmp/linux-6.12.tar.xz -C linux --strip-components=1
-          rm -f linux/.config linux/include/config
+          mkdir -p kernel
+          tar -xf /tmp/linux-6.12.tar.xz -C kernel --strip-components=1
           echo "=== Linux 6.12 source ready ==="
-          ls linux/ | head -20
+          ls kernel/ | head -10
+
+      - name: Checkout Our Patches
+        uses: actions/checkout@v4
+        with:
+          path: patches
 
       - name: Apply MT6768/MT6769 Patches
         run: |
           echo "=== Applying merlinx patches to Linux 6.12 ==="
-          cp include/dt-bindings/clock/mt6769-clk.h linux/include/dt-bindings/clock/
-          cp drivers/clk/mediatek/clk-mt6769-*.c linux/drivers/clk/mediatek/
-          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_TOPCKGEN) += clk-mt6769-topckgen.o" >> linux/drivers/clk/mediatek/Makefile
-          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_APMIXED) += clk-mt6769-apmixed.o" >> linux/drivers/clk/mediatek/Makefile
-          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_INFRA) += clk-mt6769-infracfg.o" >> linux/drivers/clk/mediatek/Makefile
-          cp drivers/pinctrl/mediatek/pinctrl-mt6768.c linux/drivers/pinctrl/mediatek/
-          echo "obj-\$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o" >> linux/drivers/pinctrl/mediatek/Makefile
-          cp arch/arm64/boot/dts/mediatek/mt6768.dtsi linux/arch/arm64/boot/dts/mediatek/
-          cp arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dts linux/arch/arm64/boot/dts/mediatek/
-          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6768.dtb" >> linux/arch/arm64/boot/dts/mediatek/Makefile
-          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb" >> linux/arch/arm64/boot/dts/mediatek/Makefile
-          cp arch/arm64/configs/merlin_defconfig linux/arch/arm64/configs/
+          cp patches/include/dt-bindings/clock/mt6769-clk.h kernel/include/dt-bindings/clock/
+          cp patches/drivers/clk/mediatek/clk-mt6769-*.c kernel/drivers/clk/mediatek/
+          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_TOPCKGEN) += clk-mt6769-topckgen.o" >> kernel/drivers/clk/mediatek/Makefile
+          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_APMIXED) += clk-mt6769-apmixed.o" >> kernel/drivers/clk/mediatek/Makefile
+          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_INFRA) += clk-mt6769-infracfg.o" >> kernel/drivers/clk/mediatek/Makefile
+          cp patches/drivers/pinctrl/mediatek/pinctrl-mt6768.c kernel/drivers/pinctrl/mediatek/
+          echo "obj-\$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o" >> kernel/drivers/pinctrl/mediatek/Makefile
+          cp patches/arch/arm64/boot/dts/mediatek/mt6768.dtsi kernel/arch/arm64/boot/dts/mediatek/
+          cp patches/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dts kernel/arch/arm64/boot/dts/mediatek/
+          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6768.dtb" >> kernel/arch/arm64/boot/dts/mediatek/Makefile
+          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb" >> kernel/arch/arm64/boot/dts/mediatek/Makefile
+          cp patches/arch/arm64/configs/merlin_defconfig kernel/arch/arm64/configs/
           echo "=== Patches applied ==="
 
       - name: Install Dependencies
@@ -55,14 +56,14 @@ jobs:
 
       - name: Configure Kernel
         run: |
-          cd linux
+          cd kernel
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
           grep -E "ARCH_MEDIATEK|MT6769|MT6768|PINCTRL_MT6768|COMMON_CLK_MT6769" .config || true
 
       - name: Build Kernel
         id: build
         run: |
-          cd linux
+          cd kernel
           echo "=== Building MerlinX Kernel 6.12 ==="
           export CCACHE_DIR=$HOME/.ccache
           START=$(date +%s)
@@ -74,7 +75,7 @@ jobs:
       - name: Package Kernel
         if: success()
         run: |
-          cd linux
+          cd kernel
           mkdir -p output
           if [ -f out/arch/arm64/boot/Image.gz-dtb ]; then
             cp out/arch/arm64/boot/Image.gz-dtb output/
@@ -92,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MerlinX-Kernel-6.12
-          path: linux/MerlinX-Kernel-6.12.zip
+          path: kernel/MerlinX-Kernel-6.12.zip
           retention-days: 30
 
       - name: Build Summary
