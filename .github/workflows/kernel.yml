@@ -36,6 +36,9 @@ jobs:
           echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6768.dtb" >> linux/arch/arm64/boot/dts/mediatek/Makefile
           echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb" >> linux/arch/arm64/boot/dts/mediatek/Makefile
           cp arch/arm64/configs/merlin_defconfig linux/arch/arm64/configs/
+          echo "=== Cleaning source tree ==="
+          cd linux
+          make mrproper
           echo "=== Patches applied ==="
 
       - name: Install Dependencies
