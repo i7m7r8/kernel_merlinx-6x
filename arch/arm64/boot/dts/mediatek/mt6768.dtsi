@@ -1,7 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+// SPDX-License-Identifier: GPL-2.0
 /*
- * MediaTek MT6768 SoC device tree source include
- * Complete version with all Phase 1-7 hardware
+ * MediaTek MT6768/MT6769/MT6769Z SoC device tree source include
  */
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -11,8 +10,8 @@
 #include <dt-bindings/thermal/thermal.h>
 
 / {
-	model = "MediaTek MT6768";
-	compatible = "mediatek,mt6768";
+	model = "MediaTek MT6769Z";
+	compatible = "mediatek,mt6769z", "mediatek,mt6769", "mediatek,mt6768";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
@@ -275,7 +274,6 @@
 			#interrupt-cells = <3>;
 		};
 
-		/* UART0 - Serial console */
 		uart0: serial@11002000 {
 			compatible = "mediatek,mt6577-uart";
 			reg = <0 0x11002000 0 0x1000>;
@@ -283,7 +281,6 @@
 			status = "okay";
 		};
 
-		/* UART1 */
 		uart1: serial@11003000 {
 			compatible = "mediatek,mt6577-uart";
 			reg = <0 0x11003000 0 0x1000>;
@@ -291,7 +288,6 @@
 			status = "disabled";
 		};
 
-		/* UART2 */
 		uart2: serial@11004000 {
 			compatible = "mediatek,mt6577-uart";
 			reg = <0 0x11004000 0 0x1000>;
@@ -299,112 +295,115 @@
 			status = "disabled";
 		};
 
-		/* I2C0 */
 		i2c0: i2c@11007000 {
 			compatible = "mediatek,mt6577-i2c";
 			reg = <0 0x11007000 0 0x1000>,
 			      <0 0x11c20000 0 0x1000>;
 			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "main", "dma";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
 		};
 
-		/* I2C1 */
 		i2c1: i2c@11008000 {
 			compatible = "mediatek,mt6577-i2c";
 			reg = <0 0x11008000 0 0x1000>,
-			      <0 0x11c20000 0 0x1000>;
+			      <0 0x11c30000 0 0x1000>;
 			interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "main", "dma";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
 		};
 
-		/* I2C2 */
 		i2c2: i2c@11009000 {
 			compatible = "mediatek,mt6577-i2c";
 			reg = <0 0x11009000 0 0x1000>,
-			      <0 0x11c20000 0 0x1000>;
+			      <0 0x11c40000 0 0x1000>;
 			interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "main", "dma";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
 		};
 
-		/* SPI0 */
 		spi0: spi@1100a000 {
 			compatible = "mediatek,mt6589-spi";
 			reg = <0 0x1100a000 0 0x1000>;
 			interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>;
+			clock-names = "main";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
 		};
 
-		/* eMMC/SD controller 0 */
 		mmc0: mmc@11230000 {
 			compatible = "mediatek,mt6779-mmc", "mediatek,mt2712-mmc";
 			reg = <0 0x11230000 0 0x1000>,
 			      <0 0x11c20000 0 0x1000>;
 			interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "source", "hclk";
 			status = "okay";
 		};
 
-		/* eMMC/SD controller 1 */
 		mmc1: mmc@11240000 {
 			compatible = "mediatek,mt6779-mmc", "mediatek,mt2712-mmc";
 			reg = <0 0x11240000 0 0x1000>,
 			      <0 0x11c30000 0 0x1000>;
 			interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "source", "hclk";
 			status = "disabled";
 		};
 
-		/* eMMC/SD controller 2 */
 		mmc2: mmc@11250000 {
 			compatible = "mediatek,mt6779-mmc", "mediatek,mt2712-mmc";
 			reg = <0 0x11250000 0 0x1000>,
 			      <0 0x11c40000 0 0x1000>;
 			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "source", "hclk";
 			status = "disabled";
 		};
 
-		/* USB 3.0/OTG */
 		usb: usb@11200000 {
 			compatible = "mediatek,mtk-mtu3";
 			reg = <0 0x11200000 0 0x3000>;
 			interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "sys_ck", "ref_ck";
 			dr_mode = "otg";
 			status = "okay";
 		};
 
-		/* Infrastructure syscon */
 		infracfg: syscon@10001000 {
-			compatible = "mediatek,mt6768-infracfg", "syscon";
+			compatible = "mediatek,mt6769z-infracfg", "mediatek,mt6769-infracfg", "mediatek,mt6768-infracfg", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
 		};
 
-		/* Top clock generator syscon */
 		topckgen: syscon@10000000 {
-			compatible = "mediatek,mt6768-topckgen", "syscon";
+			compatible = "mediatek,mt6769z-topckgen", "mediatek,mt6769-topckgen", "mediatek,mt6768-topckgen", "syscon";
 			reg = <0 0x10000000 0 0x1000>;
 		};
 
-		/* APMixed PLL syscon */
 		apmixedsys: syscon@1000c000 {
-			compatible = "mediatek,mt6768-apmixedsys", "syscon";
+			compatible = "mediatek,mt6769z-apmixedsys", "mediatek,mt6769-apmixedsys", "mediatek,mt6768-apmixedsys", "syscon";
 			reg = <0 0x1000c000 0 0x1000>;
 		};
 
-		/* Power controller syscon */
 		scpsys: syscon@10006000 {
 			compatible = "mediatek,mt6768-scpsys", "syscon";
 			reg = <0 0x10006000 0 0x1000>;
 		};
 
-		/* Pin controller */
 		pinctrl: pinctrl@10005000 {
-			compatible = "mediatek,mt6768-pinctrl";
+			compatible = "mediatek,mt6769z-pinctrl", "mediatek,mt6769-pinctrl", "mediatek,mt6768-pinctrl";
 			reg = <0 0x10005000 0 0x1000>;
 			gpio-controller;
 			gpio-ranges = <&pinctrl 0 0 186>;
@@ -414,7 +413,6 @@
 			#interrupt-cells = <2>;
 		};
 
-		/* PMIC wrapper */
 		pwrap: pwrap@1000d000 {
 			compatible = "mediatek,mt6768-pwrap";
 			reg = <0 0x1000d000 0 0x1000>;
@@ -428,25 +426,20 @@
 			};
 		};
 
-		/* RTC */
 		rtc: rtc@1000f000 {
-			compatible = "mediatek,mt6768-rtc",
-				     "mediatek,mt6397-rtc";
+			compatible = "mediatek,mt6768-rtc", "mediatek,mt6397-rtc";
 			reg = <0 0x1000f000 0 0x1000>;
 			interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_LOW>;
 		};
 
-		/* Watchdog */
 		wdt: watchdog@10007000 {
-			compatible = "mediatek,mt6768-wdt",
-				     "mediatek,mt6589-wdt";
+			compatible = "mediatek,mt6768-wdt", "mediatek,mt6589-wdt";
 			reg = <0 0x10007000 0 0x1000>;
 			interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_LOW>;
 			timeout-sec = <10>;
 			status = "okay";
 		};
 
-		/* Thermal sensor */
 		thermal: thermal@1100b000 {
 			compatible = "mediatek,mt2701-thermal";
 			reg = <0 0x1100b000 0 0x1000>;
@@ -457,7 +450,6 @@
 			status = "okay";
 		};
 
-		/* Mali GPU - Fix 5: added clocks and power-domains */
 		mali: gpu@13040000 {
 			compatible = "arm,mali-g52", "arm,mali-bifrost";
 			reg = <0 0x13040000 0 0x10000>;
@@ -465,8 +457,8 @@
 				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "job", "mmu", "gpu";
-			clocks = <&clk26m>;
-			clock-names = "bus";
+			clocks = <&topckgen CLK_TOP_MMPLL>;
+			clock-names = "gpu";
 			operating-points-v2 = <&gpu_opp_table>;
 			status = "disabled";
 		};
@@ -487,22 +479,19 @@
 				opp-hz = /bits/ 64 <800000000>;
 				opp-microvolt = <1000000>;
 			};
-			opp-820000000 {
-				opp-hz = /bits/ 64 <820000000>;
-				opp-microvolt = <1050000>;
+			opp-1000000000 {
+				opp-hz = /bits/ 64 <1000000000>;
+				opp-microvolt = <1100000>;
 			};
 		};
 
-		/* Display subsystem */
 		mmsys: syscon@14000000 {
 			compatible = "mediatek,mt6768-mmsys", "syscon";
 			reg = <0 0x14000000 0 0x1000>;
 		};
 
-		/* DSI output */
 		dsi: dsi@14014000 {
-			compatible = "mediatek,mt6768-dsi",
-				     "mediatek,mt6779-dsi";
+			compatible = "mediatek,mt6768-dsi", "mediatek,mt6779-dsi";
 			reg = <0 0x14014000 0 0x1000>,
 			      <0 0x14015000 0 0x1000>;
 			interrupts = <GIC_SPI 210 IRQ_TYPE_LEVEL_LOW>;
@@ -511,10 +500,8 @@
 			status = "disabled";
 		};
 
-		/* MIPI D-PHY */
 		mipi_tx0: mipi-dphy@14012000 {
-			compatible = "mediatek,mt6768-mipi-tx",
-				     "mediatek,mt6779-mipi-tx";
+			compatible = "mediatek,mt6768-mipi-tx", "mediatek,mt6779-mipi-tx";
 			reg = <0 0x14012000 0 0x1000>;
 			clocks = <&clk26m>;
 			clock-output-names = "mipitx_dsi_ck";
@@ -522,37 +509,29 @@
 			#phy-cells = <0>;
 		};
 
-		/* PWM for backlight */
 		pwm0: pwm@1401e000 {
-			compatible = "mediatek,mt6768-disp-pwm",
-				     "mediatek,mt6779-disp-pwm";
+			compatible = "mediatek,mt6768-disp-pwm", "mediatek,mt6779-disp-pwm";
 			reg = <0 0x1401e000 0 0x1000>;
 			#pwm-cells = <2>;
 			status = "disabled";
 		};
 
-		/* Camera sensor interface */
 		seninf: seninf@15040000 {
-			compatible = "mediatek,mt6768-seninf",
-				     "mediatek,mt6779-seninf";
+			compatible = "mediatek,mt6768-seninf", "mediatek,mt6779-seninf";
 			reg = <0 0x15040000 0 0x4000>;
 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_LOW>;
 			status = "disabled";
 		};
 
-		/* Camera ISP */
 		camsv0: camsv@15050000 {
-			compatible = "mediatek,mt6768-camsv",
-				     "mediatek,mt6779-camsv";
+			compatible = "mediatek,mt6768-camsv", "mediatek,mt6779-camsv";
 			reg = <0 0x15050000 0 0x1000>;
 			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_LOW>;
 			status = "disabled";
 		};
 
-		/* NVMEM for calibration data */
 		nvmem: nvmem@1401d000 {
-			compatible = "mediatek,mt6768-efuse",
-				     "mediatek,efuse";
+			compatible = "mediatek,mt6768-efuse", "mediatek,efuse";
 			reg = <0 0x1401d000 0 0x1000>;
 
 			thermal_calibration: thermal-calib {

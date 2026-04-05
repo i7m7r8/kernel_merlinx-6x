@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * MediaTek MT6768/MT6769 Pin Controller Driver (minimal stub)
+ * MediaTek MT6768/MT6769/MT6769Z Pin Controller Driver
  * Based on: pinctrl-mt6765.c (mainline 6.12)
- * Adapted for Linux 6.12
  */
 
 #include <linux/module.h>
@@ -12,14 +11,43 @@
 #include "pinctrl-paris.h"
 #include "pinctrl-mtk-common-v2.h"
 
-/* MT6768 pin definitions - minimal set for initial boot
- * Bug 1 fix: correct includes, Bug 5 fix: key pins defined
+/*
+ * Minimal pin definitions for initial boot.
+ * Covers: UART0, eMMC, key GPIOs used by DTS.
+ * Full 186-pin table requires vendor 4.14 reference extraction.
  */
 static const struct mtk_pin_desc mt6768_pins[] = {
 	MTK_PIN(0, "GPIO0",
 		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
 		MTK_PUPD_MASK_R1R0(0x80, 0x4),
 		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(2, "GPIO2",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "SPI_CSB"),
+	),
+	MTK_PIN(3, "GPIO3",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(5, "GPIO5",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(6, "GPIO6",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(18, "GPIO18",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "SDCard_CD"),
 	),
 	MTK_PIN(63, "UART0_TXD",
 		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
@@ -69,22 +97,177 @@ static const struct mtk_pin_desc mt6768_pins[] = {
 		MTK_FUNCTION(0, "GPIO"),
 		MTK_FUNCTION(1, "MSDC0_D3"),
 	),
+	MTK_PIN(71, "MSDC0_D4",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D4"),
+	),
+	MTK_PIN(72, "MSDC0_D5",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D5"),
+	),
+	MTK_PIN(73, "MSDC0_D6",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D6"),
+	),
+	MTK_PIN(74, "MSDC0_D7",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D7"),
+	),
+	MTK_PIN(75, "MSDC0_RST",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_RST"),
+	),
+	MTK_PIN(76, "MSDC0_DSL",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_DSL"),
+	),
+	MTK_PIN(77, "GPIO77",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(100, "GPIO100",
+		MTK_EINT_FUNCTION(0, 100),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(101, "GPIO101",
+		MTK_EINT_FUNCTION(0, 101),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(120, "GPIO120",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(121, "GPIO121",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(122, "GPIO122",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(123, "GPIO123",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(124, "GPIO124",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(125, "GPIO125",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(126, "GPIO126",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(127, "GPIO127",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(128, "GPIO128",
+		MTK_EINT_FUNCTION(0, 128),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(129, "GPIO129",
+		MTK_EINT_FUNCTION(0, 129),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(130, "GPIO130",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(145, "GPIO145",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(146, "GPIO146",
+		MTK_EINT_FUNCTION(0, 146),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(147, "GPIO147",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+	MTK_PIN(148, "GPIO148",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+	),
+};
+
+static const char * const mt6768_pinctrl_register_base_names[] = {
+	"iocfg0", "iocfg1", "iocfg2", "iocfg3", "iocfg4", "iocfg5",
+	"iocfg6", "iocfg7", "eint",
+};
+
+static const struct mtk_pin_reg_calc mt6768_reg_cals[PINCTRL_PIN_REG_MAX] = {
+	[PINCTRL_PIN_REG_MODE] = MTK_RANGE(mt6765_pin_mode_range),
+	[PINCTRL_PIN_REG_DIR] = MTK_RANGE(mt6765_pin_dir_range),
+	[PINCTRL_PIN_REG_PUPD] = MTK_RANGE(mt6765_pin_pupd_range),
+	[PINCTRL_PIN_REG_R0] = MTK_RANGE(mt6765_pin_r0_range),
+	[PINCTRL_PIN_REG_R1] = MTK_RANGE(mt6765_pin_r1_range),
+	[PINCTRL_PIN_REG_IES] = MTK_RANGE(mt6765_pin_ies_range),
+};
+
+static const struct mtk_eint_hw mt6768_eint_hw = {
+	.port_mask = 0x7,
+	.ports = 7,
+	.db_cnt = 13,
 };
 
 static const struct mtk_pin_soc mt6768_data = {
+	.reg_cal = mt6768_reg_cals,
 	.pins = mt6768_pins,
 	.npins = ARRAY_SIZE(mt6768_pins),
+	.ngrps = ARRAY_SIZE(mt6768_pins),
+	.eint_hw = &mt6768_eint_hw,
+	.gpio_m = 0,
+	.base_names = mt6768_pinctrl_register_base_names,
+	.nbase_names = ARRAY_SIZE(mt6768_pinctrl_register_base_names),
 	.bias_set_combo = mtk_pinconf_bias_set_combo,
 	.bias_get_combo = mtk_pinconf_bias_get_combo,
-	.ies_get = mtk_pinconf_ies_get,
-	.ies_set = mtk_pinconf_ies_set,
+	.drive_set = mtk_pinconf_drive_set_raw,
+	.drive_get = mtk_pinconf_drive_get_raw,
+	.adv_pull_get = mtk_pinconf_adv_pull_get,
+	.adv_pull_set = mtk_pinconf_adv_pull_set,
 };
 
 static const struct of_device_id mt6768_pinctrl_of_match[] = {
 	{ .compatible = "mediatek,mt6768-pinctrl", .data = &mt6768_data },
+	{ .compatible = "mediatek,mt6769-pinctrl", .data = &mt6768_data },
+	{ .compatible = "mediatek,mt6769z-pinctrl", .data = &mt6768_data },
 	{ }
 };
-MODULE_DEVICE_TABLE(of, mt6768_pinctrl_of_match);
 
 static struct platform_driver mt6768_pinctrl_driver = {
 	.driver = {
@@ -101,4 +284,4 @@ static int __init mt6768_pinctrl_init(void)
 arch_initcall(mt6768_pinctrl_init);
 
 MODULE_LICENSE("GPL v2");
-MODULE_DESCRIPTION("MediaTek MT6768 Pinctrl Driver");
+MODULE_DESCRIPTION("MediaTek MT6768/MT6769/MT6769Z Pinctrl Driver");

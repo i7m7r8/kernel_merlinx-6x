@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * MediaTek MT6768/MT6769 APMixed PLL Clock Driver
+ * MediaTek MT6768/MT6769/MT6769Z APMixed PLL Clock Driver
  * Based on: vendor 4.14 + mainline clk-mt6779-apmixed.c
- * Adapted for Linux 6.12
  */
 
 #include <linux/module.h>
@@ -17,12 +16,7 @@
 
 static DEFINE_SPINLOCK(mt6769_pll_lock);
 
-/*
- * APMixed PLLs - Bug 3 fix: pwr_reg is separate from reg
- * On MT6769, power register is at reg+0x4 from the base register
- */
 static const struct mtk_pll_data apmixed_plls[] = {
-	/* ARM PLL - CPU cluster */
 	{
 		.id = CLK_APMIXED_ARMPLL,
 		.name = "armpll",
@@ -36,8 +30,6 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0208,
 		.vco_mask = GENMASK(13, 12),
 	},
-
-	/* Main PLL - system clocks */
 	{
 		.id = CLK_APMIXED_MAINPLL,
 		.name = "mainpll",
@@ -51,8 +43,6 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0218,
 		.vco_mask = GENMASK(13, 12),
 	},
-
-	/* UNIV PLL - universal/peripheral */
 	{
 		.id = CLK_APMIXED_UNIVPLL,
 		.name = "univpll",
@@ -66,8 +56,6 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0228,
 		.vco_mask = GENMASK(13, 12),
 	},
-
-	/* MM PLL - display/GPU */
 	{
 		.id = CLK_APMIXED_MMPLL,
 		.name = "mmpll",
@@ -81,8 +69,19 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0238,
 		.vco_mask = GENMASK(13, 12),
 	},
-
-	/* NET1 PLL - connectivity */
+	{
+		.id = CLK_APMIXED_MSDCPLL,
+		.name = "msdcpll",
+		.reg = 0x0250,
+		.pwr_reg = 0x0254,
+		.en_mask = BIT(0),
+		.pcw_reg = 0x0258,
+		.pcw_bits = GENMASK(23, 0),
+		.pd_reg = 0x0258,
+		.pd_shift = 14,
+		.vco_reg = 0x0258,
+		.vco_mask = GENMASK(13, 12),
+	},
 	{
 		.id = CLK_APMIXED_NET1PLL,
 		.name = "net1pll",
@@ -96,8 +95,6 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0268,
 		.vco_mask = GENMASK(13, 12),
 	},
-
-	/* APLL1 - audio */
 	{
 		.id = CLK_APMIXED_APLL1,
 		.name = "apll1",
@@ -111,8 +108,6 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0278,
 		.vco_mask = GENMASK(13, 12),
 	},
-
-	/* APLL2 - audio */
 	{
 		.id = CLK_APMIXED_APLL2,
 		.name = "apll2",
@@ -126,8 +121,6 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0288,
 		.vco_mask = GENMASK(13, 12),
 	},
-
-	/* Fix 3: CCIPLL - required by topckgen ccipll_d3 parent */
 	{
 		.id = CLK_APMIXED_CCIPLL,
 		.name = "ccipll",
@@ -151,6 +144,7 @@ static const struct mtk_clk_desc apmixed_desc = {
 
 static const struct of_device_id of_match_clk_mt6769_apmixed[] = {
 	{ .compatible = "mediatek,mt6769-apmixedsys", .data = &apmixed_desc },
+	{ .compatible = "mediatek,mt6769z-apmixedsys", .data = &apmixed_desc },
 	{ .compatible = "mediatek,mt6768-apmixedsys", .data = &apmixed_desc },
 	{ }
 };

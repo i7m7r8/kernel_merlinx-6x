@@ -17,8 +17,9 @@
 #include <dt-bindings/pwm/pwm.h>
 
 / {
-	model = "Xiaomi Redmi Note 9 (merlinx)";
-	compatible = "xiaomi,merlinx", "mediatek,mt6768";
+	model = "Xiaomi Redmi Note 9 (merlinx MT6769Z)";
+	compatible = "xiaomi,merlinx", "mediatek,mt6769z",
+		     "mediatek,mt6769", "mediatek,mt6768";
 
 	memory@40000000 {
 		device_type = "memory";
@@ -427,8 +428,8 @@
 
 /* GPU */
 &mali {
-	clocks = <&clk26m>;
-	clock-names = "bus";
+	clocks = <&topckgen CLK_TOP_MMPLL>;
+	clock-names = "gpu";
 	status = "okay";
 };
 

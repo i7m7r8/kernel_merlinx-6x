@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * MediaTek MT6768/MT6769 Top Clock Generator Driver
- * Based on: clk-mt6779.c (mainline) + vendor 4.14
- * Adapted for Linux 6.12
- *
- * Fix 1: MUX parents are now proper C string arrays
+ * MediaTek MT6768/MT6769/MT6769Z Top Clock Generator Driver
+ * Based on: clk-mt6779.c (mainline 6.12) + vendor 4.14
  */
 
 #include <linux/module.h>
@@ -20,8 +17,8 @@
 
 static DEFINE_SPINLOCK(mt6769_clk_lock);
 
-/* Top clock dividers */
-static const struct mtk_fixed_factor top_divs[] = {
+/* Fixed factor clocks */
+static const struct mtk_fixed_factor top_factor_clks[] = {
 	FACTOR(CLK_TOP_CLK13M, "clk13m", "clk26m", 1, 2),
 	FACTOR(CLK_TOP_OSC_D2, "osc_d2", "clk26m", 1, 2),
 	FACTOR(CLK_TOP_OSC_D4, "osc_d4", "clk26m", 1, 4),
@@ -47,7 +44,7 @@ static const struct mtk_fixed_factor top_divs[] = {
 	FACTOR(CLK_TOP_USB_PHY_48M, "usb_phy_48m", "univpll", 1, 25),
 };
 
-/* Fix 1: MUX parents as proper C string arrays (not comma-separated strings) */
+/* MUX parent arrays - proper C string arrays */
 static const char * const armpll_parents[] __initconst = {
 	"armpll", "armpll_d3"
 };
@@ -64,8 +61,8 @@ static const char * const mmpll_parents[] __initconst = {
 	"mmpll", "mmpll_d3"
 };
 
-/* Top clock muxes - using proper parent arrays */
-static const struct mtk_mux top_muxes[] = {
+/* MUX clocks */
+static const struct mtk_mux top_mux_clks[] = {
 	MUX(CLK_TOP_ARMPLL, "armpll_sel", armpll_parents, 0x0000, 0, 1),
 	MUX(CLK_TOP_MAINPLL, "mainpll_sel", mainpll_parents, 0x0004, 0, 2),
 	MUX(CLK_TOP_UNIVPLL, "univpll_sel", univpll_parents, 0x0008, 0, 2),
@@ -73,15 +70,16 @@ static const struct mtk_mux top_muxes[] = {
 };
 
 static const struct mtk_clk_desc topckgen_desc = {
-	.muxes = top_muxes,
-	.nmuxes = ARRAY_SIZE(top_muxes),
-	.clks = top_divs,
-	.num_clks = ARRAY_SIZE(top_divs),
+	.factor_clks = top_factor_clks,
+	.num_factor_clks = ARRAY_SIZE(top_factor_clks),
+	.mux_clks = top_mux_clks,
+	.num_mux_clks = ARRAY_SIZE(top_mux_clks),
 	.clk_lock = &mt6769_clk_lock,
 };
 
 static const struct of_device_id of_match_clk_mt6769_topckgen[] = {
 	{ .compatible = "mediatek,mt6769-topckgen", .data = &topckgen_desc },
+	{ .compatible = "mediatek,mt6769z-topckgen", .data = &topckgen_desc },
 	{ .compatible = "mediatek,mt6768-topckgen", .data = &topckgen_desc },
 	{ }
 };

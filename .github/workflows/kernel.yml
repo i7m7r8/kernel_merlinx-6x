@@ -65,7 +65,7 @@ jobs:
           cd kernel
           export CCACHE_DIR=$HOME/.ccache
           START=$(date +%s)
-          make LLVM=1 O=../build ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" -j$(nproc) Image modules dtbs
+          make LLVM=1 O=../build ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" -j$(nproc) Image dtbs
           END=$(date +%s)
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
           echo "Build done in $((END - START))s"
