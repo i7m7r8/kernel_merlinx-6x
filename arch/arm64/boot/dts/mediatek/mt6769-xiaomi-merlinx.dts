@@ -7,7 +7,6 @@
 /dts-v1/;
 #include "mt6768.dtsi"
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/gpio/gpio.h>
 
 / {
 	model = "Xiaomi Redmi Note 9 (merlinx)";
@@ -15,17 +14,7 @@
 
 	memory@40000000 {
 		device_type = "memory";
-		reg = <0 0x40000000 0 0x100000000>; /* 4GB */
-	};
-
-	gpio-keys {
-		compatible = "gpio-keys";
-		power-key {
-			label = "Power Key";
-			gpios = <&pio 66 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_POWER>;
-			wakeup-source;
-		};
+		reg = <0x00000000 0x40000000 0x00000001 0x00000000>; /* 4GB */
 	};
 };
 
