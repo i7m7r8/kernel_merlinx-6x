@@ -310,32 +310,10 @@
 	status = "okay";
 };
 
-/* USB OTG with Type-C */
+/* USB OTG */
 &usb {
 	dr_mode = "otg";
 	status = "okay";
-};
-
-/* USB Type-C connector */
-usb_c_connector: connector {
-	compatible = "usb-c-connector";
-	label = "USB-C";
-	data-role = "dual";
-	power-role = "dual";
-	try-power-role = "sink";
-	op-sink-microwatt = <1000000>;
-
-	ports {
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		port@0 {
-			reg = <0>;
-			usbc_hs: endpoint {
-				remote-endpoint = <&usb_hs>;
-			};
-		};
-	};
 };
 
 /* Thermal sensor */
@@ -438,18 +416,6 @@ usb_c_connector: connector {
 };
 
 &camsv0 {
-	status = "okay";
-};
-
-/* Fingerprint sensor */
-fingerprint@0 {
-	compatible = "fpc,fpc1020";
-	reg = <0>;
-	interrupt-parent = <&pinctrl>;
-	interrupts = <128 IRQ_TYPE_EDGE_FALLING>;
-	reset-gpios = <&pinctrl 129 GPIO_ACTIVE_LOW>;
-	vdd-supply = <&vcn18>;
-	vddio-supply = <&vio18>;
 	status = "okay";
 };
 
