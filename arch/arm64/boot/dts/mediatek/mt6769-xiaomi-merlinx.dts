@@ -428,12 +428,6 @@
 	status = "okay";
 };
 
-/* IR Blaster */
-ir-blaster {
-	compatible = "gpio-ir-tx";
-	gpios = <&pinctrl 130 GPIO_ACTIVE_HIGH>;
-};
-
 /* Fingerprint Sensor - via SPI */
 &spi0 {
 	status = "okay";
@@ -446,5 +440,13 @@ ir-blaster {
 		reset-gpios = <&pinctrl 129 GPIO_ACTIVE_LOW>;
 		vdd-supply = <&vcn18>;
 		vddio-supply = <&vio18>;
+	};
+};
+
+/ {
+	/* IR Blaster */
+	ir-blaster {
+		compatible = "gpio-ir-tx";
+		gpios = <&pinctrl 130 GPIO_ACTIVE_HIGH>;
 	};
 };
