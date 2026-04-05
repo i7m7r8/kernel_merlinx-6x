@@ -56,9 +56,9 @@ jobs:
         run: |
           cd kernel
           make mrproper
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
+          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
           echo "=== Key configs ==="
-          grep -c "=y\|=m" .config || true
+          grep -c "=y\|=m" out/.config || true
 
       - name: Build Kernel
         id: build
