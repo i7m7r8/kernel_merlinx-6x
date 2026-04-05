@@ -325,5 +325,23 @@
 			#pwm-cells = <2>;
 			status = "disabled";
 		};
+
+		/* Camera sensor interface */
+		seninf: seninf@15040000 {
+			compatible = "mediatek,mt6768-seninf",
+				     "mediatek,mt6779-seninf";
+			reg = <0 0x15040000 0 0x4000>;
+			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_LOW>;
+			status = "disabled";
+		};
+
+		/* Camera ISP */
+		camsv0: camsv@15050000 {
+			compatible = "mediatek,mt6768-camsv",
+				     "mediatek,mt6779-camsv";
+			reg = <0 0x15050000 0 0x1000>;
+			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_LOW>;
+			status = "disabled";
+		};
 	};
 };

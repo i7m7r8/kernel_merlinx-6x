@@ -113,6 +113,55 @@
 /* I2C2 - Camera sensors */
 &i2c2 {
 	status = "okay";
+
+	/* Main camera: IMX686 64MP */
+	imx686: camera@1a {
+		compatible = "sony,imx686";
+		reg = <0x1a>;
+		enable-gpios = <&pinctrl 120 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&pinctrl 121 GPIO_ACTIVE_LOW>;
+		af-gpios = <&pinctrl 122 GPIO_ACTIVE_HIGH>;
+		flash-gpios = <&pinctrl 123 GPIO_ACTIVE_HIGH>;
+		clocks = <&clk26m>;
+		clock-names = "xvclk";
+		assigned-clocks = <&clk26m>;
+		assigned-clock-rates = <24000000>;
+		port {
+			imx686_ep: endpoint {
+				remote-endpoint = <&seninf_ep0>;
+				data-lanes = <1 2 3 4>;
+				clock-lanes = <0>;
+			};
+		};
+	};
+
+	/* Ultra-wide: OV8856 8MP */
+	ov8856: camera@36 {
+		compatible = "ovti,ov8856";
+		reg = <0x36>;
+		enable-gpios = <&pinctrl 124 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&pinctrl 125 GPIO_ACTIVE_LOW>;
+		clocks = <&clk26m>;
+		clock-names = "xvclk";
+		assigned-clock-rates = <24000000>;
+		port {
+			ov8856_ep: endpoint {
+				remote-endpoint = <&seninf_ep1>;
+				data-lanes = <1 2>;
+				clock-lanes = <0>;
+			};
+		};
+	};
+
+	/* Macro: GC02M1 2MP */
+	gc02m1: camera@3c {
+		compatible = "galaxycore,gc02m1";
+		reg = <0x3c>;
+		enable-gpios = <&pinctrl 126 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&pinctrl 127 GPIO_ACTIVE_LOW>;
+		clocks = <&clk26m>;
+		clock-names = "xvclk";
+	};
 };
 
 /* SPI0 */
@@ -169,5 +218,43 @@
 
 /* GPU */
 &mali {
+	status = "okay";
+};
+
+/* Camera sensor interface */
+&seninf {
+	status = "okay";
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			seninf_ep0: endpoint {
+				remote-endpoint = <&imx686_ep>;
+				bus-type = <4>; /* CSI2 DPHY */
+				data-lanes = <1 2 3 4>;
+				clock-lanes = <0>;
+				clock-noncontinuous;
+				link-frequencies = /bits/ 64 <297000000>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+			seninf_ep1: endpoint {
+				remote-endpoint = <&ov8856_ep>;
+				bus-type = <4>;
+				data-lanes = <1 2>;
+				clock-lanes = <0>;
+				clock-noncontinuous;
+				link-frequencies = /bits/ 64 <297000000>;
+			};
+		};
+	};
+};
+
+&camsv0 {
 	status = "okay";
 };
