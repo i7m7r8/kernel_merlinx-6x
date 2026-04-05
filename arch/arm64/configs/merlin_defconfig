@@ -977,3 +977,9 @@ CONFIG_N_GSM=y
 # GPIO Keys
 CONFIG_KEYBOARD_GPIO=y
 CONFIG_INPUT_GPIO_ROTARY_ENCODER=y
+
+# Firmware
+CONFIG_EXTRA_FIRMWARE="mediatek/soc1_0_ram_wifi_1a_1_hdr.bin mediatek/soc1_0_ram_bt_1a_1_hdr.bin mediatek/soc1_0_patch_mcu_1a_1_hdr.bin novatek_ts_fw.bin novatek_ts_mp.bin"
+CONFIG_EXTRA_FIRMWARE_DIR="firmware"
+CONFIG_FW_LOADER_USER_HELPER=y
+CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y

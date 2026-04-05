@@ -123,3 +123,23 @@ jobs:
             echo "## ❌ Build Failed" >> $GITHUB_STEP_SUMMARY
             echo "Check logs above." >> $GITHUB_STEP_SUMMARY
           fi
+
+      - name: Package Firmware
+        if: success()
+        run: |
+          echo "=== Packaging firmware ==="
+          mkdir -p firmware/mediatek
+          cp patches/firmware/novatek_ts_fw.bin firmware/
+          cp patches/firmware/novatek_ts_mp.bin firmware/
+          cp patches/firmware/soc1_0_ram_wifi_1a_1_hdr.bin firmware/mediatek/
+          cp patches/firmware/soc1_0_ram_bt_1a_1_hdr.bin firmware/mediatek/
+          cp patches/firmware/soc1_0_patch_mcu_1a_1_hdr.bin firmware/mediatek/
+          ls -lhR firmware/
+
+      - name: Upload Firmware Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MerlinX-Firmware
+          path: firmware/
+          retention-days: 30
