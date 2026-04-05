@@ -6,31 +6,35 @@
 #ifndef _DT_BINDINGS_CLOCK_MT6769_H
 #define _DT_BINDINGS_CLOCK_MT6769_H
 
-/* TOPCKGEN */
-#define CLK_TOP_CLK13M			0
-#define CLK_TOP_OSC_D2			1
-#define CLK_TOP_OSC_D4			2
-#define CLK_TOP_OSC_D8			3
-#define CLK_TOP_UNIVPLL_D2		4
-#define CLK_TOP_UNIVPLL_D3		5
-#define CLK_TOP_UNIVPLL_D5		6
-#define CLK_TOP_UNIVPLL_D5_D4		7
-#define CLK_TOP_UNIVPLL_D6		8
-#define CLK_TOP_UNIVPLL_D7		9
-#define CLK_TOP_MMPLL_D3		10
-#define CLK_TOP_MMPLL_D4		11
-#define CLK_TOP_MMPLL_D5		12
-#define CLK_TOP_ARMPLL_D3		13
-#define CLK_TOP_CCIPLL_D3		14
-#define CLK_TOP_APLL1_D4		15
-#define CLK_TOP_APLL2_D4		16
-#define CLK_TOP_NET1PLL_D4		17
-#define CLK_TOP_USB_PHY_48M		18
-#define CLK_TOP_UNIVPLL_D2_D4		19
-#define CLK_TOP_UNIVPLL_D2_D8		20
-#define CLK_TOP_UNIVPLL_D2_D16		21
-#define CLK_TOP_UNIVPLL_D3_D4		22
-#define CLK_TOP_NR_CLK			23
+/* TOPCKGEN - MUX outputs first, then dividers */
+#define CLK_TOP_ARMPLL			0
+#define CLK_TOP_MAINPLL			1
+#define CLK_TOP_UNIVPLL		2
+#define CLK_TOP_MMPLL			3
+#define CLK_TOP_CLK13M		4
+#define CLK_TOP_OSC_D2		5
+#define CLK_TOP_OSC_D4		6
+#define CLK_TOP_OSC_D8		7
+#define CLK_TOP_UNIVPLL_D2		8
+#define CLK_TOP_UNIVPLL_D3		9
+#define CLK_TOP_UNIVPLL_D5		10
+#define CLK_TOP_UNIVPLL_D5_D4		11
+#define CLK_TOP_UNIVPLL_D6		12
+#define CLK_TOP_UNIVPLL_D7		13
+#define CLK_TOP_MMPLL_D3		14
+#define CLK_TOP_MMPLL_D4		15
+#define CLK_TOP_MMPLL_D5		16
+#define CLK_TOP_ARMPLL_D3		17
+#define CLK_TOP_CCIPLL_D3		18
+#define CLK_TOP_APLL1_D4		19
+#define CLK_TOP_APLL2_D4		20
+#define CLK_TOP_NET1PLL_D4		21
+#define CLK_TOP_USB_PHY_48M		22
+#define CLK_TOP_UNIVPLL_D2_D4		23
+#define CLK_TOP_UNIVPLL_D2_D8		24
+#define CLK_TOP_UNIVPLL_D2_D16		25
+#define CLK_TOP_UNIVPLL_D3_D4		26
+#define CLK_TOP_NR_CLK		27
 
 /* APMIXEDSYS */
 #define CLK_APMIXED_ARMPLL		0
