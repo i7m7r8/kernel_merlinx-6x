@@ -10,38 +10,33 @@ jobs:
     name: Compile Kernel 6.12-merlinx
     runs-on: ubuntu-24.04
     steps:
-      - name: Download Linux 6.12 from Git
+      - name: Download Linux 6.12
         run: |
-          echo "=== Cloning Linux 6.12 ==="
           git clone --depth=1 --branch v6.12 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git kernel
-          echo "=== Linux 6.12 source ready ==="
-          ls kernel/ | head -10
 
-      - name: Checkout Our Patches
+      - name: Checkout Patches
         uses: actions/checkout@v4
         with:
           path: patches
 
-      - name: Apply MT6768/MT6769 Patches
+      - name: Apply Patches
         run: |
-          echo "=== Applying merlinx patches to Linux 6.12 ==="
           cp patches/include/dt-bindings/clock/mt6769-clk.h kernel/include/dt-bindings/clock/
           cp patches/drivers/clk/mediatek/clk-mt6769-*.c kernel/drivers/clk/mediatek/
-          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_TOPCKGEN) += clk-mt6769-topckgen.o" >> kernel/drivers/clk/mediatek/Makefile
-          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_APMIXED) += clk-mt6769-apmixed.o" >> kernel/drivers/clk/mediatek/Makefile
-          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_INFRA) += clk-mt6769-infracfg.o" >> kernel/drivers/clk/mediatek/Makefile
+          for f in clk-mt6769-topckgen clk-mt6769-apmixed clk-mt6769-infracfg; do
+            echo "obj-\$(CONFIG_COMMON_CLK_MT6769_$(echo $f | cut -d- -f3 | tr 'a-z' 'A-Z')) += $f.o" >> kernel/drivers/clk/mediatek/Makefile
+          done
           cp patches/drivers/pinctrl/mediatek/pinctrl-mt6768.c kernel/drivers/pinctrl/mediatek/
-          echo "obj-\$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o" >> kernel/drivers/pinctrl/mediatek/Makefile
+          echo 'obj-$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o' >> kernel/drivers/pinctrl/mediatek/Makefile
           cp patches/arch/arm64/boot/dts/mediatek/mt6768.dtsi kernel/arch/arm64/boot/dts/mediatek/
           cp patches/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dts kernel/arch/arm64/boot/dts/mediatek/
-          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb" >> kernel/arch/arm64/boot/dts/mediatek/Makefile
+          echo 'dtb-$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb' >> kernel/arch/arm64/boot/dts/mediatek/Makefile
           cp patches/arch/arm64/configs/merlin_defconfig kernel/arch/arm64/configs/
-          echo "=== Patches applied ==="
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu bison flex libssl-dev libelf-dev bc lzop libncurses5-dev libncurses-dev make zip ccache
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu bison flex libssl-dev libelf-dev bc lzop libncurses5-dev libncurses-dev make zip ccache wget
           ccache -o max_size=3G
 
       - name: Cache ccache
@@ -51,59 +46,74 @@ jobs:
           key: ${{ runner.os }}-ccache-merlinx-6.12
           restore-keys: ${{ runner.os }}-ccache-merlinx-
 
-      - name: Configure Kernel
+      - name: Configure
         run: |
           cd kernel
           make mrproper
-          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
-          echo "=== Key configs ==="
-          grep -c "=y\|=m" out/.config || true
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
+          echo "Config options: $(grep -c '=y\|=m' .config)"
 
       - name: Build Kernel
         id: build
         run: |
           cd kernel
-          echo "=== Building MerlinX Kernel 6.12 ==="
           export CCACHE_DIR=$HOME/.ccache
           START=$(date +%s)
           make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache aarch64-linux-gnu-gcc" Image modules dtbs
           END=$(date +%s)
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
-          echo "=== Build Complete in $((END - START)) seconds ==="
+          echo "Build done in $((END - START))s"
 
-      - name: Package Kernel
+      - name: Package with AnyKernel3
         if: success()
         run: |
-          cd kernel
-          mkdir -p output
-          if [ -f out/arch/arm64/boot/Image.gz ]; then
-            cp out/arch/arm64/boot/Image.gz output/
-          elif [ -f out/arch/arm64/boot/Image ]; then
-            cp out/arch/arm64/boot/Image output/
+          git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git AnyKernel3
+          cd AnyKernel3
+          rm -f Image* dtb*
+          if [ -f ../kernel/out/arch/arm64/boot/Image.gz ]; then
+            cp ../kernel/out/arch/arm64/boot/Image.gz .
+          elif [ -f ../kernel/out/arch/arm64/boot/Image ]; then
+            cp ../kernel/out/arch/arm64/boot/Image .
           fi
-          find out/arch/arm64/boot/dts -name "*.dtb" -exec cp {} output/ \; 2>/dev/null
-          cd output && zip -r ../MerlinX-Kernel-6.12.zip . && cd ..
-          ls -lh MerlinX-Kernel-6.12.zip
+          cp ../kernel/out/arch/arm64/boot/dts/mediatek/*.dtb . 2>/dev/null || true
+
+          cat > anykernel.sh << 'EOF'
+          kernel.string=MerlinX-Kernel-6.12
+          do.devicecheck=0
+          do.modules=0
+          do.systemless=1
+          do.cleanup=1
+          do.cleananykernel=1
+          name="Image"
+          slotselect=0
+          patch_vbmeta_flag=0
+          BLOCK=/dev/block/bootdevice/by-name/boot
+          EOF
+
+          zip -r9 ../MerlinX-Kernel-6.12-AnyKernel3.zip . -x .git README.md *placeholder
+          cd ..
+          ls -lh MerlinX-Kernel-6.12-AnyKernel3.zip
 
       - name: Upload Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MerlinX-Kernel-6.12
-          path: kernel/MerlinX-Kernel-6.12.zip
+          path: MerlinX-Kernel-6.12-AnyKernel3.zip
           retention-days: 30
 
       - name: Build Summary
         if: always()
         run: |
           if [ "${{ steps.build.outcome }}" == "success" ]; then
-            echo "## Build Success" >> $GITHUB_STEP_SUMMARY
-            echo "- Kernel: Linux 6.12 (Mainline + MT6768 drivers)" >> $GITHUB_STEP_SUMMARY
-            echo "- Device: Redmi Note 9 (merlinx)" >> $GITHUB_STEP_SUMMARY
-            echo "- Build Time: ${{ steps.build.outputs.build_time }}" >> $GITHUB_STEP_SUMMARY
+            echo "## ✅ Build Success" >> $GITHUB_STEP_SUMMARY
+            echo "- **Kernel**: Linux 6.12 + MT6768/69 drivers" >> $GITHUB_STEP_SUMMARY
+            echo "- **Device**: Redmi Note 9 (merlinx)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Time**: ${{ steps.build.outputs.build_time }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **Format**: AnyKernel3 flashable ZIP" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Download from **Artifacts** section." >> $GITHUB_STEP_SUMMARY
+            echo "Download from **Artifacts** section. Flash via TWRP/OrangeFox." >> $GITHUB_STEP_SUMMARY
           else
-            echo "## Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ Build Failed" >> $GITHUB_STEP_SUMMARY
             echo "Check logs above." >> $GITHUB_STEP_SUMMARY
           fi

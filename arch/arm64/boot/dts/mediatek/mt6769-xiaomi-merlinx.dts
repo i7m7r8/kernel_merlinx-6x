@@ -427,3 +427,24 @@
 &camsv0 {
 	status = "okay";
 };
+
+/* IR Blaster */
+ir-blaster {
+	compatible = "gpio-ir-tx";
+	gpios = <&pinctrl 130 GPIO_ACTIVE_HIGH>;
+};
+
+/* Fingerprint Sensor - via SPI */
+&spi0 {
+	status = "okay";
+
+	fingerprint@0 {
+		compatible = "fpc,fpc1020";
+		reg = <0>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <128 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&pinctrl 129 GPIO_ACTIVE_LOW>;
+		vdd-supply = <&vcn18>;
+		vddio-supply = <&vio18>;
+	};
+};
