@@ -1,40 +1,81 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * MediaTek MT6768/MT6769 Pin Controller Driver (minimal stub)
- * Based on: pinctrl-mt6765.c (mainline) + vendor 4.14
+ * Based on: pinctrl-mt6765.c (mainline 6.12)
+ * Adapted for Linux 6.12
  */
 
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
-#include <linux/pinctrl/pinctrl.h>
-#include <linux/pinctrl/pinmux.h>
-#include <linux/pinctrl/mtk-mtk.h>
-#include <linux/regmap.h>
 
+#include "pinctrl-mtk-mt6765.h"
+#include "pinctrl-paris.h"
+
+/* MT6768 pin definitions - minimal set for initial boot
+ * Bug 1 fix: correct includes, Bug 5 fix: key pins defined
+ */
 static const struct mtk_pin_desc mt6768_pins[] = {
 	MTK_PIN(0, "GPIO0",
 		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
-		DRIVING_DEFAULT(0x4),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
 		MTK_FUNCTION(0, "GPIO"),
 	),
 	MTK_PIN(63, "UART0_TXD",
-		DRIVING_DEFAULT(0x4),
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
 		MTK_FUNCTION(0, "GPIO"),
 		MTK_FUNCTION(1, "UART0_TXD"),
 	),
 	MTK_PIN(64, "UART0_RXD",
-		DRIVING_DEFAULT(0x4),
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
 		MTK_FUNCTION(0, "GPIO"),
 		MTK_FUNCTION(1, "UART0_RXD"),
+	),
+	MTK_PIN(65, "MSDC0_CLK",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_CLK"),
+	),
+	MTK_PIN(66, "MSDC0_CMD",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_CMD"),
+	),
+	MTK_PIN(67, "MSDC0_D0",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D0"),
+	),
+	MTK_PIN(68, "MSDC0_D1",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D1"),
+	),
+	MTK_PIN(69, "MSDC0_D2",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D2"),
+	),
+	MTK_PIN(70, "MSDC0_D3",
+		MTK_EINT_FUNCTION(NO_EINT_SUPPORT, NO_EINT_SUPPORT),
+		MTK_PUPD_MASK_R1R0(0x80, 0x4),
+		MTK_FUNCTION(0, "GPIO"),
+		MTK_FUNCTION(1, "MSDC0_D3"),
 	),
 };
 
 static const struct mtk_pin_soc mt6768_data = {
 	.pins = mt6768_pins,
 	.npins = ARRAY_SIZE(mt6768_pins),
-	.bias_get_combo = mtk_pinconf_bias_get_combo,
 	.bias_set_combo = mtk_pinconf_bias_set_combo,
+	.bias_get_combo = mtk_pinconf_bias_get_combo,
 	.ies_get = mtk_pinconf_ies_get,
 	.ies_set = mtk_pinconf_ies_set,
 };
@@ -45,31 +86,19 @@ static const struct of_device_id mt6768_pinctrl_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, mt6768_pinctrl_of_match);
 
-static int mt6768_pinctrl_probe(struct platform_device *pdev)
-{
-	struct mtk_pinctrl *pctl;
-	struct regmap *regmap;
-
-	pctl = devm_kzalloc(&pdev->dev, sizeof(*pctl), GFP_KERNEL);
-	if (!pctl)
-		return -ENOMEM;
-
-	regmap = syscon_node_to_regmap(pdev->dev.parent->of_node);
-	if (IS_ERR(regmap))
-		return PTR_ERR(regmap);
-
-	pctl->dev = &pdev->dev;
-	pctl->soc = &mt6768_data;
-	((struct mtk_pin_soc *)pctl->soc)->regmap = regmap;
-
-	return mtk_pinctrl_probe(pdev, pctl->soc);
-}
-
 static struct platform_driver mt6768_pinctrl_driver = {
-	.probe = mt6768_pinctrl_probe,
 	.driver = {
 		.name = "mt6768-pinctrl",
 		.of_match_table = mt6768_pinctrl_of_match,
 	},
+	.probe = mtk_paris_pinctrl_probe,
 };
-builtin_platform_driver(mt6768_pinctrl_driver);
+
+static int __init mt6768_pinctrl_init(void)
+{
+	return platform_driver_register(&mt6768_pinctrl_driver);
+}
+arch_initcall(mt6768_pinctrl_init);
+
+MODULE_LICENSE("GPL v2");
+MODULE_DESCRIPTION("MediaTek MT6768 Pinctrl Driver");

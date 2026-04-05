@@ -43,7 +43,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu bison flex libssl-dev libelf-dev bc lzop libncurses5-dev libncurses-dev make zip ccache wget
+          sudo apt-get install -y clang lld llvm gcc-aarch64-linux-gnu g++-aarch64-linux-gnu bison flex libssl-dev libelf-dev bc lzop libncurses5-dev libncurses-dev make zip ccache wget
           ccache -o max_size=3G
 
       - name: Cache ccache
@@ -65,7 +65,7 @@ jobs:
           cd kernel
           export CCACHE_DIR=$HOME/.ccache
           START=$(date +%s)
-          make -j$(nproc) O=../build ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache aarch64-linux-gnu-gcc" Image modules dtbs
+          make LLVM=1 O=../build ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" -j$(nproc) Image modules dtbs
           END=$(date +%s)
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
           echo "Build done in $((END - START))s"

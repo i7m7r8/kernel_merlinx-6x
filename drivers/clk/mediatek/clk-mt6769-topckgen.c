@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * MediaTek MT6768/MT6769 Top Clock Generator Driver
- * Based on clk-mt6779.c (mainline) + vendor 4.14
+ * Based on: clk-mt6779.c (mainline) + vendor 4.14
+ * Adapted for Linux 6.12
  */
 
 #include <linux/module.h>
@@ -17,6 +18,7 @@
 
 static DEFINE_SPINLOCK(mt6769_clk_lock);
 
+/* Top clock dividers - based on vendor 4.14 + MT6779 mainline reference */
 static const struct mtk_fixed_factor top_divs[] = {
 	FACTOR(CLK_TOP_CLK13M, "clk13m", "clk26m", 1, 2),
 	FACTOR(CLK_TOP_OSC_D2, "osc_d2", "clk26m", 1, 2),
@@ -43,7 +45,8 @@ static const struct mtk_fixed_factor top_divs[] = {
 	FACTOR(CLK_TOP_USB_PHY_48M, "usb_phy_48m", "univpll", 1, 25),
 };
 
-static const struct mtk_composite top_muxes[] = {
+/* Top clock muxes - Bug 2 fix: properly defined for registration */
+static const struct mtk_mux top_muxes[] = {
 	MUX(CLK_TOP_ARMPLL, "armpll_sel", "armpll, armpll_d3", 0x0000, 0, 1),
 	MUX(CLK_TOP_MAINPLL, "mainpll_sel", "mainpll, mainpll_d2, mainpll_d3", 0x0004, 0, 2),
 	MUX(CLK_TOP_UNIVPLL, "univpll_sel", "univpll, univpll_d2, univpll_d3", 0x0008, 0, 2),
@@ -51,6 +54,9 @@ static const struct mtk_composite top_muxes[] = {
 };
 
 static const struct mtk_clk_desc topckgen_desc = {
+	/* Bug 2 fix: muxes are now included */
+	.muxes = top_muxes,
+	.nmuxes = ARRAY_SIZE(top_muxes),
 	.clks = top_divs,
 	.num_clks = ARRAY_SIZE(top_divs),
 	.clk_lock = &mt6769_clk_lock,
