@@ -465,10 +465,9 @@
 				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "job", "mmu", "gpu";
-			clocks = <&topckgen CLK_TOP_MMPLL>;
-			clock-names = "gpu";
+			clocks = <&clk26m>;
+			clock-names = "bus";
 			operating-points-v2 = <&gpu_opp_table>;
-			power-domains = <&scpsys 13>; /* MT6768_POWER_DOMAIN_MFG */
 			status = "disabled";
 		};
 
