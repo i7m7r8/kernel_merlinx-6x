@@ -10,12 +10,10 @@ jobs:
     name: Compile Kernel 6.12-merlinx
     runs-on: ubuntu-24.04
     steps:
-      - name: Download Linux 6.12 Source
+      - name: Download Linux 6.12 from Git
         run: |
-          echo "=== Downloading Linux 6.12 ==="
-          wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.tar.xz -O /tmp/linux-6.12.tar.xz
-          mkdir -p kernel
-          tar -xf /tmp/linux-6.12.tar.xz -C kernel --strip-components=1
+          echo "=== Cloning Linux 6.12 ==="
+          git clone --depth=1 --branch v6.12 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git kernel
           echo "=== Linux 6.12 source ready ==="
           ls kernel/ | head -10
 
@@ -59,7 +57,8 @@ jobs:
           cd kernel
           make mrproper
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
-          grep -E "ARCH_MEDIATEK|MT6769|MT6768|PINCTRL_MT6768|COMMON_CLK_MT6769" .config || true
+          echo "=== Key configs ==="
+          grep -c "=y\|=m" .config || true
 
       - name: Build Kernel
         id: build
