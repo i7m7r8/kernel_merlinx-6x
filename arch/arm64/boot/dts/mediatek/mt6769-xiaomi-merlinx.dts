@@ -227,7 +227,7 @@
 	};
 };
 
-/* I2C1 - Sensors */
+/* I2C1 - Sensors + FM Radio */
 &i2c1 {
 	status = "okay";
 
@@ -248,6 +248,47 @@
 		interrupt-parent = <&pinctrl>;
 		interrupts = <101 IRQ_TYPE_EDGE_RISING>;
 		vdd-supply = <&vcn18>;
+	};
+
+	/* AKM09918 Compass/Magnetometer */
+	akm09918@0c {
+		compatible = "asahi-kasei,akm09918";
+		reg = <0x0c>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <102 IRQ_TYPE_EDGE_RISING>;
+		vdd-supply = <&vcn18>;
+		vddio-supply = <&vcn18>;
+	};
+
+	/* MT6631 FM Radio */
+	fm-radio@64 {
+		compatible = "mediatek,mt6631-fm";
+		reg = <0x64>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <103 IRQ_TYPE_EDGE_RISING>;
+		vdd-supply = <&vcn18>;
+	};
+};
+
+/* UART1 - GPS */
+&uart1 {
+	status = "okay";
+
+	gnss {
+		compatible = "mediatek,gnss";
+		vdd-supply = <&vcn28>;
+		vddio-supply = <&vcn18>;
+	};
+};
+&uart2 {
+	status = "okay";
+
+	bluetooth {
+		compatible = "mediatek,mt7663-bluetooth";
+		interrupt-parent = <&pinctrl>;
+		interrupts = <147 IRQ_TYPE_LEVEL_LOW>;
+		enable-gpios = <&pinctrl 148 GPIO_ACTIVE_HIGH>;
+		vddio-supply = <&vcn18>;
 	};
 };
 
@@ -448,5 +489,32 @@
 	ir-blaster {
 		compatible = "gpio-ir-tx";
 		gpios = <&pinctrl 130 GPIO_ACTIVE_HIGH>;
+	};
+
+	/* GPIO Keys - Power + Volume */
+	gpio-keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+
+		power-key {
+			label = "Power Key";
+			gpios = <&pinctrl 66 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_POWER>;
+			wakeup-source;
+		};
+
+		vol-up {
+			label = "Volume Up";
+			gpios = <&pinctrl 67 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEUP>;
+			wakeup-source;
+		};
+
+		vol-down {
+			label = "Volume Down";
+			gpios = <&pinctrl 68 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEDOWN>;
+			wakeup-source;
+		};
 	};
 };
