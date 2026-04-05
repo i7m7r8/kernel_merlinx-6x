@@ -5,6 +5,8 @@
  * Display: 1080x2340 Tianma DSI panel
  * Storage: eMMC 5.1 + SD card
  * USB: Type-C OTG
+ * WiFi: MT7663 SDIO
+ * Audio: MT6358 codec
  */
 
 /dts-v1/;
@@ -50,6 +52,18 @@
 			default-state = "off";
 		};
 	};
+
+	/* Audio sound card */
+	sound: sound {
+		compatible = "mediatek,mt6768-sound",
+			     "mediatek,mt6779-sound";
+		model = "mt6768-merlinx";
+		audio-routing =
+			"Earphone", "HPOL",
+			"Earphone", "HPOR",
+			"Speakers", "SPK",
+			"Headset Mic", "HSREF";
+	};
 };
 
 /* eMMC - 8-bit, HS400 */
@@ -63,12 +77,23 @@
 	status = "okay";
 };
 
-/* SD Card - 4-bit */
+/* SD Card / WiFi combo */
 &mmc1 {
 	bus-width = <4>;
 	max-frequency = <50000000>;
 	cap-sd-highspeed;
 	cd-gpios = <&pinctrl 18 GPIO_ACTIVE_LOW>;
+
+	/* MT7663 WiFi via SDIO slot */
+	wifi@1 {
+		compatible = "mediatek,mt7663s";
+		reg = <1>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <146 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-names = "wifi";
+		mediatek,mt7663s-wmac = <&wifi_mac>;
+	};
+
 	status = "okay";
 };
 
