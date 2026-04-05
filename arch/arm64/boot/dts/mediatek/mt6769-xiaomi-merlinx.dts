@@ -83,6 +83,7 @@
 	max-frequency = <50000000>;
 	cap-sd-highspeed;
 	cd-gpios = <&pinctrl 18 GPIO_ACTIVE_LOW>;
+	status = "okay";
 
 	/* MT7663 WiFi via SDIO slot */
 	wifi@1 {
@@ -91,10 +92,7 @@
 		interrupt-parent = <&pinctrl>;
 		interrupts = <146 IRQ_TYPE_LEVEL_LOW>;
 		interrupt-names = "wifi";
-		mediatek,mt7663s-wmac = <&wifi_mac>;
 	};
-
-	status = "okay";
 };
 
 /* UART0 console */
