@@ -85,6 +85,14 @@
 			"Main Mic", "DMIC1",
 			"Sub Mic", "DMIC2";
 	};
+
+	/* Battery fuel gauge */
+	battery: battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <5000000>;
+		voltage-min-design-microvolt = <3400000>;
+		voltage-max-design-microvolt = <4400000>;
+	};
 };
 
 /* PMIC Regulators - MT6358 */
@@ -415,14 +423,7 @@
 	};
 };
 
+/* Camera ISP */
 &camsv0 {
 	status = "okay";
-};
-
-/* Battery fuel gauge */
-battery: battery {
-	compatible = "simple-battery";
-	charge-full-design-microamp-hours = <5000000>;
-	voltage-min-design-microvolt = <3400000>;
-	voltage-max-design-microvolt = <4400000>;
 };
