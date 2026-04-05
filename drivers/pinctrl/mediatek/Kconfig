@@ -1,0 +1,11 @@
+
+config PINCTRL_MT6768
+	bool "MediaTek MT6768/MT6769 pin control"
+	depends on ARM64 || COMPILE_TEST
+	depends on ARCH_MEDIATEK
+	default ARM64 && ARCH_MEDIATEK
+	select PINCTRL_MTK
+	help
+	  Say Y here to enable the pin controller for MediaTek MT6768/MT6769
+	  SoCs. This enables GPIO and pinmux support for devices like the
+	  Redmi Note 9 (merlin).

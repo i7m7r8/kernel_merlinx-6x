@@ -1,0 +1,20 @@
+
+config COMMON_CLK_MT6769_TOPCKGEN
+	tristate "Clock driver for MediaTek MT6768/MT6769 topckgen"
+	depends on ARCH_MEDIATEK || COMPILE_TEST
+	select COMMON_CLK_MEDIATEK
+	default ARCH_MEDIATEK
+	help
+	  This driver supports MediaTek MT6768/MT6769 top clock generator.
+
+config COMMON_CLK_MT6769_APMIXED
+	tristate "Clock driver for MediaTek MT6768/MT6769 apmixedsys"
+	depends on COMMON_CLK_MT6769_TOPCKGEN
+	help
+	  This driver supports MediaTek MT6768/MT6769 apmixed PLL clocks.
+
+config COMMON_CLK_MT6769_INFRA
+	tristate "Clock driver for MediaTek MT6768/MT6769 infracfg"
+	depends on COMMON_CLK_MT6769_TOPCKGEN
+	help
+	  This driver supports MediaTek MT6768/MT6769 infrastructure clocks.

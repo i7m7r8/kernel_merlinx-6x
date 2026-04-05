@@ -1,0 +1,95 @@
+name: Build MerlinX 6.12 Kernel
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile Kernel 6.12-merlinx
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+            bison flex libssl-dev libelf-dev bc lzop \
+            libncurses5-dev libncurses-dev make zip ccache
+          ccache -o max_size=3G
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-ccache-merlinx-6.12
+          restore-keys: ${{ runner.os }}-ccache-merlinx-
+
+      - name: Configure Kernel
+        run: |
+          echo "=== Generating config ==="
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
+          echo "=== Key configs ==="
+          grep -E "ARCH_MEDIATEK|MT6769|MT6768|PINCTRL_MT6768|COMMON_CLK_MT6769" .config || true
+
+      - name: Build Kernel
+        id: build
+        run: |
+          echo "============================================"
+          echo " Building MerlinX Kernel 6.12 on GitHub"
+          echo " Device: Redmi Note 9 (merlinx)"
+          echo "============================================"
+          export CCACHE_DIR=$HOME/.ccache
+          START=$(date +%s)
+          make -j$(nproc) O=out \
+            ARCH=arm64 \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            CC="ccache aarch64-linux-gnu-gcc" \
+            Image.gz-dtb modules
+          END=$(date +%s)
+          echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
+          echo "============================================"
+          echo " Build Complete in $((END - START)) seconds!"
+          echo "============================================"
+
+      - name: Package Kernel
+        if: success()
+        run: |
+          mkdir -p output
+          if [ -f out/arch/arm64/boot/Image.gz-dtb ]; then
+            cp out/arch/arm64/boot/Image.gz-dtb output/
+          elif [ -f out/arch/arm64/boot/Image.gz ]; then
+            cp out/arch/arm64/boot/Image.gz output/
+          elif [ -f out/arch/arm64/boot/Image ]; then
+            cp out/arch/arm64/boot/Image output/
+          fi
+          find out/arch/arm64/boot/dts -name "*.dtb" -exec cp {} output/ \; 2>/dev/null
+          cd output && zip -r ../MerlinX-Kernel-6.12.zip . && cd ..
+          ls -lh MerlinX-Kernel-6.12.zip
+
+      - name: Upload Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MerlinX-Kernel-6.12
+          path: MerlinX-Kernel-6.12.zip
+          retention-days: 30
+
+      - name: Build Summary
+        if: always()
+        run: |
+          if [ "${{ steps.build.outcome }}" == "success" ]; then
+            echo "## Build Success" >> $GITHUB_STEP_SUMMARY
+            echo "- Kernel: Linux 6.12 (Mainline + MT6768 drivers)" >> $GITHUB_STEP_SUMMARY
+            echo "- Device: Redmi Note 9 (merlinx)" >> $GITHUB_STEP_SUMMARY
+            echo "- Build Time: ${{ steps.build.outputs.build_time }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Download from **Artifacts** section." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Check logs above." >> $GITHUB_STEP_SUMMARY
+          fi

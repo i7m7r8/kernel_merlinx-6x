@@ -1,0 +1,102 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * DT bindings for MediaTek MT6768/MT6769 clock controller
+ */
+
+#ifndef _DT_BINDINGS_CLOCK_MT6769_H
+#define _DT_BINDINGS_CLOCK_MT6769_H
+
+/* TOPCKGEN */
+#define CLK_TOP_CLK13M			0
+#define CLK_TOP_OSC_D2			1
+#define CLK_TOP_OSC_D4			2
+#define CLK_TOP_OSC_D8			3
+#define CLK_TOP_UNIVPLL_D2		4
+#define CLK_TOP_UNIVPLL_D3		5
+#define CLK_TOP_UNIVPLL_D5		6
+#define CLK_TOP_UNIVPLL_D5_D4		7
+#define CLK_TOP_UNIVPLL_D6		8
+#define CLK_TOP_UNIVPLL_D7		9
+#define CLK_TOP_MMPLL_D3		10
+#define CLK_TOP_MMPLL_D4		11
+#define CLK_TOP_MMPLL_D5		12
+#define CLK_TOP_ARMPLL_D3		13
+#define CLK_TOP_CCIPLL_D3		14
+#define CLK_TOP_APLL1_D4		15
+#define CLK_TOP_APLL2_D4		16
+#define CLK_TOP_NET1PLL_D4		17
+#define CLK_TOP_USB_PHY_48M		18
+#define CLK_TOP_UNIVPLL_D2_D4		19
+#define CLK_TOP_UNIVPLL_D2_D8		20
+#define CLK_TOP_UNIVPLL_D2_D16		21
+#define CLK_TOP_UNIVPLL_D3_D4		22
+#define CLK_TOP_NR_CLK			23
+
+/* APMIXEDSYS */
+#define CLK_APMIXED_ARMPLL		0
+#define CLK_APMIXED_MAINPLL		1
+#define CLK_APMIXED_UNIVPLL		2
+#define CLK_APMIXED_MMPLL		3
+#define CLK_APMIXED_MSDCPLL		4
+#define CLK_APMIXED_NET1PLL		5
+#define CLK_APMIXED_APLL1		6
+#define CLK_APMIXED_APLL2		7
+#define CLK_APMIXED_CCIPLL		8
+#define CLK_APMIXED_NR_CLK		9
+
+/* INFRACFG */
+#define CLK_INFRA_IPCORE		0
+#define CLK_INFRA_GCE			1
+#define CLK_INFRA_GCE_26M		2
+#define CLK_INFRA_SCP_SPI		3
+#define CLK_INFRA_SCPSYS		4
+#define CLK_INFRA_L2C_SRAM		5
+#define CLK_INFRA_CCI			6
+#define CLK_INFRA_CPUCFG		7
+#define CLK_INFRA_PDA			8
+#define CLK_INFRA_APXGPU		9
+#define CLK_INFRA_DBGOPT		10
+#define CLK_INFRA_EMI			11
+#define CLK_INFRA_CPUCFG_N9		12
+#define CLK_INFRA_CONNMCU		13
+#define CLK_INFRA_MCU_BUS		14
+#define CLK_INFRA_MSDC0		15
+#define CLK_INFRA_MSDC1		16
+#define CLK_INFRA_MSDC2		17
+#define CLK_INFRA_NFI			18
+#define CLK_INFRA_NFIECC		19
+#define CLK_INFRA_SF			20
+#define CLK_INFRA_USB_SYS		21
+#define CLK_INFRA_USB_66M		22
+#define CLK_INFRA_UART0		23
+#define CLK_INFRA_UART1		24
+#define CLK_INFRA_UART2		25
+#define CLK_INFRA_IRDA		26
+#define CLK_INFRA_BTIF		27
+#define CLK_INFRA_DISP_PWM		28
+#define CLK_INFRA_PMIC_SPI		29
+#define CLK_INFRA_PMIC_WRAP		30
+#define CLK_INFRA_PMIC_AP_32K		31
+#define CLK_INFRA_AUD			32
+#define CLK_INFRA_AUDIO_26M_B		33
+#define CLK_INFRA_MD_32K		34
+#define CLK_INFRA_MD_SYS		35
+#define CLK_INFRA_NR_CLK		36
+
+/* MMSYS */
+#define CLK_MM_SMI_COMMON		0
+#define CLK_MM_SMI_LARB0		1
+#define CLK_MM_DISP_OVL0		2
+#define CLK_MM_DISP_OVL_2L0		3
+#define CLK_MM_DISP_RDMA0		4
+#define CLK_MM_DISP_COLOR0		5
+#define CLK_MM_DISP_CCORR0		6
+#define CLK_MM_DISP_AAL0		7
+#define CLK_MM_DISP_GAMMA0		8
+#define CLK_MM_DISP_DITHER		9
+#define CLK_MM_DISP_UFOE		10
+#define CLK_MM_DISP_DSI0		11
+#define CLK_MM_DISP_MUTEX		12
+#define CLK_MM_NR_CLK		13
+
+#endif /* _DT_BINDINGS_CLOCK_MT6769_H */
