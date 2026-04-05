@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
+/* SPDX-License-Identifier: GPL-2.0 */
 /*
  * MediaTek MT6768 SoC device tree source include
- * Based on vendor 4.14 DTS + Mainline 6.12 conventions
+ * Minimal version for initial boot
  */
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -119,74 +119,43 @@
 			compatible = "mediatek,mt6577-uart";
 			reg = <0 0x11002000 0 0x1000>;
 			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infracfg CLK_INFRA_UART0>;
-			clock-names = "baud";
 			status = "okay";
 		};
 
-		i2c0: i2c@11007000 {
-			compatible = "mediatek,mt6577-i2c";
-			reg = <0 0x11007000 0 0x1000>,
-			      <0 0x10217000 0 0x1000>;
-			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infracfg CLK_INFRA_I2C0>,
-				 <&infracfg CLK_INFRA_AP_DMA>;
-			clock-names = "main", "dma";
-			#address-cells = <1>;
-			#size-cells = <0>;
-			status = "disabled";
-		};
-
 		mmc0: mmc@11230000 {
-			compatible = "mediatek,mt6768-mmc",
-				     "mediatek,mt2712-mmc";
+			compatible = "mediatek,mt2712-mmc";
 			reg = <0 0x11230000 0 0x1000>,
 			      <0 0x11c20000 0 0x1000>;
 			interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infracfg CLK_INFRA_MSDC0>,
-				 <&infracfg CLK_INFRA_MSDC0_SRC>;
-			clock-names = "source", "hclk";
 			status = "okay";
 		};
 
 		usb: usb@11200000 {
-			compatible = "mediatek,mt6768-mtu3",
-				     "mediatek,mtk-mtu3";
+			compatible = "mediatek,mtk-mtu3";
 			reg = <0 0x11200000 0 0x3000>;
 			interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infracfg CLK_INFRA_USB_SYS>,
-				 <&infracfg CLK_INFRA_USB_66M>;
-			clock-names = "sys_ck", "ref_ck";
 			dr_mode = "otg";
 			status = "okay";
 		};
 
-		infracfg: clock-controller@10001000 {
-			compatible = "mediatek,mt6768-infracfg",
-				     "syscon";
+		infracfg: syscon@10001000 {
+			compatible = "mediatek,mt6768-infracfg", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
-			#clock-cells = <1>;
 		};
 
-		topckgen: clock-controller@10000000 {
-			compatible = "mediatek,mt6768-topckgen",
-				     "syscon";
+		topckgen: syscon@10000000 {
+			compatible = "mediatek,mt6768-topckgen", "syscon";
 			reg = <0 0x10000000 0 0x1000>;
-			#clock-cells = <1>;
 		};
 
-		apmixedsys: clock-controller@1000c000 {
-			compatible = "mediatek,mt6768-apmixedsys",
-				     "syscon";
+		apmixedsys: syscon@1000c000 {
+			compatible = "mediatek,mt6768-apmixedsys", "syscon";
 			reg = <0 0x1000c000 0 0x1000>;
-			#clock-cells = <1>;
 		};
 
-		scpsys: power-controller@10006000 {
-			compatible = "mediatek,mt6768-scpsys",
-				     "syscon";
+		scpsys: syscon@10006000 {
+			compatible = "mediatek,mt6768-scpsys", "syscon";
 			reg = <0 0x10006000 0 0x1000>;
-			#power-domain-cells = <1>;
 		};
 
 		pinctrl: pinctrl@10005000 {
@@ -204,8 +173,6 @@
 			compatible = "mediatek,mt6768-pwrap";
 			reg = <0 0x1000d000 0 0x1000>;
 			interrupts = <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&clk26m>, <&clk26m>;
-			clock-names = "spi", "wrap";
 
 			pmic: mt6358 {
 				compatible = "mediatek,mt6358";
@@ -216,13 +183,9 @@
 		};
 
 		thermal: thermal@1100b000 {
-			compatible = "mediatek,mt6768-thermal",
-				     "mediatek,mt2701-thermal";
+			compatible = "mediatek,mt2701-thermal";
 			reg = <0 0x1100b000 0 0x1000>;
 			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infracfg CLK_INFRA_THERM>,
-				 <&infracfg CLK_INFRA_ADC_26M>;
-			clock-names = "therm", "auxadc";
 			#thermal-sensor-cells = <1>;
 			status = "okay";
 		};
@@ -234,8 +197,6 @@
 				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "job", "mmu", "gpu";
-			clocks = <&infracfg CLK_INFRA_GPU>;
-			clock-names = "gpu";
 			status = "disabled";
 		};
 	};
