@@ -2,7 +2,7 @@
 /*
  * Device Tree for Redmi Note 9 (merlinx - non-NFC)
  * SoC: MediaTek MT6769Z (Helio G85)
- * Display: 1080x2340
+ * Display: 1080x2340 Tianma DSI panel
  * Storage: eMMC 5.1 + SD card
  * USB: Type-C OTG
  */
@@ -11,6 +11,7 @@
 #include "mt6768.dtsi"
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pwm/pwm.h>
 
 / {
 	model = "Xiaomi Redmi Note 9 (merlinx)";
@@ -24,6 +25,30 @@
 	chosen {
 		bootargs = "console=ttyS0,921600n1 earlycon=uart8250,mmio32,0x11002000,921600n8";
 		stdout-path = "uart0:921600n8";
+	};
+
+	/* Backlight */
+	backlight: backlight {
+		compatible = "pwm-backlight";
+		pwms = <&pwm0 0 50000 PWM_POLARITY_INVERTED>;
+		brightness-levels = <0 32 64 96 128 160 192 224 255>;
+		default-brightness-level = <6>;
+	};
+
+	/* Vibrator */
+	vibrator: vibrator {
+		compatible = "gpio-vibrator";
+		enable-gpios = <&pinctrl 77 GPIO_ACTIVE_HIGH>;
+	};
+
+	/* LED indicators */
+	leds {
+		compatible = "gpio-leds";
+		status-led {
+			label = "merlinx:status:amber";
+			gpios = <&pinctrl 145 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
 	};
 };
 
@@ -52,12 +77,12 @@
 	status = "okay";
 };
 
-/* I2C0 - Touchscreen, etc */
+/* I2C0 - Touchscreen */
 &i2c0 {
 	status = "okay";
 };
 
-/* I2C1 - PMIC, sensors */
+/* I2C1 - Sensors */
 &i2c1 {
 	status = "okay";
 };
@@ -80,5 +105,46 @@
 
 /* Thermal sensor */
 &thermal {
+	status = "okay";
+};
+
+/* PWM for backlight */
+&pwm0 {
+	status = "okay";
+};
+
+/* DSI display output */
+&dsi {
+	status = "okay";
+
+	panel@0 {
+		compatible = "tianma,tm6451f", "simple-panel";
+		reg = <0>;
+		backlight = <&backlight>;
+		enable-gpios = <&pinctrl 6 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&pinctrl 5 GPIO_ACTIVE_LOW>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi_out>;
+			};
+		};
+	};
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@1 {
+			reg = <1>;
+			dsi_out: endpoint {
+				remote-endpoint = <&panel_in>;
+			};
+		};
+	};
+};
+
+/* GPU */
+&mali {
 	status = "okay";
 };
