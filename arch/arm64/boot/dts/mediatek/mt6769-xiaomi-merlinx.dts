@@ -7,6 +7,7 @@
  * USB: Type-C OTG
  * WiFi: MT7663 SDIO
  * Audio: MT6358 codec
+ * Cameras: IMX686 + OV8856 + GC02M1
  */
 
 /dts-v1/;
@@ -53,16 +54,109 @@
 		};
 	};
 
+	/* Flashlight LED */
+	flash-led {
+		compatible = "gpio-leds";
+		flash-led {
+			label = "merlinx:flash:white";
+			gpios = <&pinctrl 123 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "flash";
+		};
+		torch-led {
+			label = "merlinx:torch:white";
+			gpios = <&pinctrl 124 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "torch";
+		};
+	};
+
 	/* Audio sound card */
 	sound: sound {
 		compatible = "mediatek,mt6768-sound",
 			     "mediatek,mt6779-sound";
 		model = "mt6768-merlinx";
 		audio-routing =
-			"Earphone", "HPOL",
-			"Earphone", "HPOR",
+			"Headphone", "HPOL",
+			"Headphone", "HPOR",
 			"Speakers", "SPK",
-			"Headset Mic", "HSREF";
+			"Speakers", "SPKL",
+			"Speakers", "SPKR",
+			"Headset Mic", "HSREF",
+			"Headset Mic", "HSMIC",
+			"Main Mic", "DMIC1",
+			"Sub Mic", "DMIC2";
+	};
+};
+
+/* PMIC Regulators - MT6358 */
+&pmic {
+	regulators {
+		vdram1: buck-vdram1 {
+			regulator-name = "vdram1";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <2087500>;
+			regulator-always-on;
+		};
+
+		vcore: buck-vcore {
+			regulator-name = "vcore";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+			regulator-always-on;
+		};
+
+		vpa: boost-vpa {
+			regulator-name = "vpa";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <3650000>;
+		};
+
+		vcn18: ldo-vcn18 {
+			regulator-name = "vcn18";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		vcn28: ldo-vcn28 {
+			regulator-name = "vcn28";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+
+		vio18: ldo-vio18 {
+			regulator-name = "vio18";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		vcamd: ldo-vcamd {
+			regulator-name = "vcamd";
+			regulator-min-microvolt = <900000>;
+			regulator-max-microvolt = <1500000>;
+		};
+
+		vcamio: ldo-vcamio {
+			regulator-name = "vcamio";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		vmc: ldo-vmc {
+			regulator-name = "vmc";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
+		vmch: ldo-vmch {
+			regulator-name = "vmch";
+			regulator-min-microvolt = <2900000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
+		vibr: ldo-vibr {
+			regulator-name = "vibr";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <3300000>;
+		};
 	};
 };
 
@@ -74,6 +168,8 @@
 	mmc-hs200-1_8v;
 	mmc-hs400-1_8v;
 	non-removable;
+	vmmc-supply = <&vmc>;
+	vqmmc-supply = <&vio18>;
 	status = "okay";
 };
 
@@ -83,6 +179,8 @@
 	max-frequency = <50000000>;
 	cap-sd-highspeed;
 	cd-gpios = <&pinctrl 18 GPIO_ACTIVE_LOW>;
+	vmmc-supply = <&vmch>;
+	vqmmc-supply = <&vmc>;
 	status = "okay";
 
 	/* MT7663 WiFi via SDIO slot */
@@ -103,11 +201,46 @@
 /* I2C0 - Touchscreen */
 &i2c0 {
 	status = "okay";
+
+	/* Touchscreen: Novatek NT36672A */
+	touchscreen@5c {
+		compatible = "novatek,nt36672a";
+		reg = <0x5c>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&pinctrl 2 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <1080>;
+		touchscreen-size-y = <2340>;
+		touchscreen-inverted-x;
+		touchscreen-inverted-y;
+		vdd-supply = <&vcn28>;
+		iovdd-supply = <&vcn18>;
+		firmware-name = "novatek_ts_fw.bin";
+	};
 };
 
 /* I2C1 - Sensors */
 &i2c1 {
 	status = "okay";
+
+	/* BMI160 IMU */
+	bmi160@68 {
+		compatible = "bmi,bmi160";
+		reg = <0x68>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <100 IRQ_TYPE_EDGE_RISING>;
+		vdd-supply = <&vcn18>;
+		vddio-supply = <&vio18>;
+	};
+
+	/* STK3310 Proximity/Light */
+	stk3310@48 {
+		compatible = "sensortek,stk3310";
+		reg = <0x48>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <101 IRQ_TYPE_EDGE_RISING>;
+		vdd-supply = <&vcn18>;
+	};
 };
 
 /* I2C2 - Camera sensors */
@@ -126,6 +259,9 @@
 		clock-names = "xvclk";
 		assigned-clocks = <&clk26m>;
 		assigned-clock-rates = <24000000>;
+		avdd-supply = <&vcamd>;
+		dovdd-supply = <&vcamio>;
+		dvdd-supply = <&vcn18>;
 		port {
 			imx686_ep: endpoint {
 				remote-endpoint = <&seninf_ep0>;
@@ -144,6 +280,9 @@
 		clocks = <&clk26m>;
 		clock-names = "xvclk";
 		assigned-clock-rates = <24000000>;
+		avdd-supply = <&vcamd>;
+		dovdd-supply = <&vcamio>;
+		dvdd-supply = <&vcn18>;
 		port {
 			ov8856_ep: endpoint {
 				remote-endpoint = <&seninf_ep1>;
@@ -161,6 +300,8 @@
 		reset-gpios = <&pinctrl 127 GPIO_ACTIVE_LOW>;
 		clocks = <&clk26m>;
 		clock-names = "xvclk";
+		avdd-supply = <&vcamd>;
+		dovdd-supply = <&vcamio>;
 	};
 };
 
@@ -169,10 +310,32 @@
 	status = "okay";
 };
 
-/* USB OTG */
+/* USB OTG with Type-C */
 &usb {
 	dr_mode = "otg";
 	status = "okay";
+};
+
+/* USB Type-C connector */
+usb_c_connector: connector {
+	compatible = "usb-c-connector";
+	label = "USB-C";
+	data-role = "dual";
+	power-role = "dual";
+	try-power-role = "sink";
+	op-sink-microwatt = <1000000>;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			usbc_hs: endpoint {
+				remote-endpoint = <&usb_hs>;
+			};
+		};
+	};
 };
 
 /* Thermal sensor */
@@ -195,6 +358,25 @@
 		backlight = <&backlight>;
 		enable-gpios = <&pinctrl 6 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&pinctrl 5 GPIO_ACTIVE_LOW>;
+
+		display-timings {
+			native-mode = <&timing0>;
+			timing0: timing {
+				clock-frequency = <148500000>;
+				hactive = <1080>;
+				vactive = <2340>;
+				hfront-porch = <30>;
+				hback-porch = <30>;
+				hsync-len = <10>;
+				vfront-porch = <10>;
+				vback-porch = <10>;
+				vsync-len = <4>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <0>;
+				pixelclk-active = <0>;
+			};
+		};
 
 		port {
 			panel_in: endpoint {
@@ -257,4 +439,24 @@
 
 &camsv0 {
 	status = "okay";
+};
+
+/* Fingerprint sensor */
+fingerprint@0 {
+	compatible = "fpc,fpc1020";
+	reg = <0>;
+	interrupt-parent = <&pinctrl>;
+	interrupts = <128 IRQ_TYPE_EDGE_FALLING>;
+	reset-gpios = <&pinctrl 129 GPIO_ACTIVE_LOW>;
+	vdd-supply = <&vcn18>;
+	vddio-supply = <&vio18>;
+	status = "okay";
+};
+
+/* Battery fuel gauge */
+battery: battery {
+	compatible = "simple-battery";
+	charge-full-design-microamp-hours = <5000000>;
+	voltage-min-design-microvolt = <3400000>;
+	voltage-max-design-microvolt = <4400000>;
 };

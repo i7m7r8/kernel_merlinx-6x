@@ -1,13 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * MediaTek MT6768 SoC device tree source include
- * Comprehensive version with Phase 2 hardware
+ * Complete version with all Phase 1-7 hardware
  */
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/clock/mt6769-clk.h>
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/thermal/thermal.h>
 
 / {
 	model = "MediaTek MT6768";
@@ -40,48 +41,207 @@
 			compatible = "arm,cortex-a55";
 			reg = <0x000>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_opp_table>;
+			#cooling-cells = <2>;
 		};
 		cpu1: cpu@100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
 			reg = <0x100>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_opp_table>;
+			#cooling-cells = <2>;
 		};
 		cpu2: cpu@200 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
 			reg = <0x200>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_opp_table>;
+			#cooling-cells = <2>;
 		};
 		cpu3: cpu@300 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
 			reg = <0x300>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_opp_table>;
+			#cooling-cells = <2>;
 		};
 		cpu4: cpu@400 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
 			reg = <0x400>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_opp_table>;
+			#cooling-cells = <2>;
 		};
 		cpu5: cpu@500 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
 			reg = <0x500>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_opp_table>;
+			#cooling-cells = <2>;
 		};
 		cpu6: cpu@600 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a75";
 			reg = <0x600>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_big_opp_table>;
+			#cooling-cells = <2>;
 		};
 		cpu7: cpu@700 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a75";
 			reg = <0x700>;
 			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP>;
+			operating-points-v2 = <&cpu_big_opp_table>;
+			#cooling-cells = <2>;
+		};
+
+		cpu_opp_table: opp-table-cluster0 {
+			compatible = "operating-points-v2";
+			opp-shared;
+
+			opp-500000000 {
+				opp-hz = /bits/ 64 <500000000>;
+				opp-microvolt = <850000>;
+			};
+			opp-850000000 {
+				opp-hz = /bits/ 64 <850000000>;
+				opp-microvolt = <900000>;
+			};
+			opp-1200000000 {
+				opp-hz = /bits/ 64 <1200000000>;
+				opp-microvolt = <950000>;
+			};
+			opp-1500000000 {
+				opp-hz = /bits/ 64 <1500000000>;
+				opp-microvolt = <1000000>;
+			};
+			opp-1701000000 {
+				opp-hz = /bits/ 64 <1701000000>;
+				opp-microvolt = <1050000>;
+			};
+		};
+
+		cpu_big_opp_table: opp-table-cluster1 {
+			compatible = "operating-points-v2";
+			opp-shared;
+
+			opp-500000000 {
+				opp-hz = /bits/ 64 <500000000>;
+				opp-microvolt = <850000>;
+			};
+			opp-850000000 {
+				opp-hz = /bits/ 64 <850000000>;
+				opp-microvolt = <900000>;
+			};
+			opp-1200000000 {
+				opp-hz = /bits/ 64 <1200000000>;
+				opp-microvolt = <950000>;
+			};
+			opp-1500000000 {
+				opp-hz = /bits/ 64 <1500000000>;
+				opp-microvolt = <1000000>;
+			};
+			opp-1800000000 {
+				opp-hz = /bits/ 64 <1800000000>;
+				opp-microvolt = <1050000>;
+			};
+			opp-2000000000 {
+				opp-hz = /bits/ 64 <2000000000>;
+				opp-microvolt = <1100000>;
+			};
+			opp-2171000000 {
+				opp-hz = /bits/ 64 <2171000000>;
+				opp-microvolt = <1150000>;
+			};
+		};
+
+		CPU_SLEEP: cpu-sleep {
+			compatible = "arm,idle-state";
+			arm,psci-suspend-param = <0x00000001>;
+			entry-latency-us = <600>;
+			exit-latency-us = <600>;
+			min-residency-us = <1200>;
+		};
+	};
+
+	thermal-zones {
+		cpu-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <1000>;
+			thermal-sensors = <&thermal 0>;
+
+			trips {
+				cpu_alert0: cpu-alert0 {
+					temperature = <70000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+				cpu_alert1: cpu-alert1 {
+					temperature = <85000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+				cpu_crit: cpu-crit {
+					temperature = <115000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cpu_alert0>;
+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu6 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		battery-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <1000>;
+			thermal-sensors = <&thermal 1>;
+
+			trips {
+				battery_alert: battery-alert {
+					temperature = <60000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+				battery_crit: battery-crit {
+					temperature = <70000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+		};
+
+		skin-thermal {
+			polling-delay-passive = <500>;
+			polling-delay = <2000>;
+			thermal-sensors = <&thermal 2>;
+
+			trips {
+				skin_alert: skin-alert {
+					temperature = <50000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+			};
 		};
 	};
 
@@ -268,12 +428,32 @@
 			};
 		};
 
+		/* RTC */
+		rtc: rtc@1000f000 {
+			compatible = "mediatek,mt6768-rtc",
+				     "mediatek,mt6397-rtc";
+			reg = <0 0x1000f000 0 0x1000>;
+			interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_LOW>;
+		};
+
+		/* Watchdog */
+		wdt: watchdog@10007000 {
+			compatible = "mediatek,mt6768-wdt",
+				     "mediatek,mt6589-wdt";
+			reg = <0 0x10007000 0 0x1000>;
+			interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_LOW>;
+			timeout-sec = <10>;
+			status = "okay";
+		};
+
 		/* Thermal sensor */
 		thermal: thermal@1100b000 {
 			compatible = "mediatek,mt2701-thermal";
 			reg = <0 0x1100b000 0 0x1000>;
 			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
 			#thermal-sensor-cells = <1>;
+			nvmem-cells = <&thermal_calibration>;
+			nvmem-cell-names = "calibration-data";
 			status = "okay";
 		};
 
@@ -285,7 +465,30 @@
 				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "job", "mmu", "gpu";
+			operating-points-v2 = <&gpu_opp_table>;
 			status = "disabled";
+		};
+
+		gpu_opp_table: gpu-opp-table {
+			compatible = "operating-points-v2";
+			opp-shared;
+
+			opp-300000000 {
+				opp-hz = /bits/ 64 <300000000>;
+				opp-microvolt = <800000>;
+			};
+			opp-500000000 {
+				opp-hz = /bits/ 64 <500000000>;
+				opp-microvolt = <900000>;
+			};
+			opp-800000000 {
+				opp-hz = /bits/ 64 <800000000>;
+				opp-microvolt = <1000000>;
+			};
+			opp-820000000 {
+				opp-hz = /bits/ 64 <820000000>;
+				opp-microvolt = <1050000>;
+			};
 		};
 
 		/* Display subsystem */
@@ -342,6 +545,17 @@
 			reg = <0 0x15050000 0 0x1000>;
 			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_LOW>;
 			status = "disabled";
+		};
+
+		/* NVMEM for calibration data */
+		nvmem: nvmem@1401d000 {
+			compatible = "mediatek,mt6768-efuse",
+				     "mediatek,efuse";
+			reg = <0 0x1401d000 0 0x1000>;
+
+			thermal_calibration: thermal-calib {
+				reg = <0x000 0x010>;
+			};
 		};
 	};
 };
