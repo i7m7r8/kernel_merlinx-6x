@@ -34,7 +34,6 @@ jobs:
           echo "obj-\$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o" >> kernel/drivers/pinctrl/mediatek/Makefile
           cp patches/arch/arm64/boot/dts/mediatek/mt6768.dtsi kernel/arch/arm64/boot/dts/mediatek/
           cp patches/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dts kernel/arch/arm64/boot/dts/mediatek/
-          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6768.dtb" >> kernel/arch/arm64/boot/dts/mediatek/Makefile
           echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb" >> kernel/arch/arm64/boot/dts/mediatek/Makefile
           cp patches/arch/arm64/configs/merlin_defconfig kernel/arch/arm64/configs/
           echo "=== Patches applied ==="
