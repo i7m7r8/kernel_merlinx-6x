@@ -19,68 +19,29 @@ jobs:
           wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.tar.xz -O /tmp/linux-6.12.tar.xz
           tar -xf /tmp/linux-6.12.tar.xz -C .
           mv linux-6.12 linux
-          echo "=== Linux 6.12 source ready ==="
           ls linux/ | head -20
 
-      - name: Apply Our MT6768/MT6769 Patches
+      - name: Apply MT6768/MT6769 Patches
         run: |
           echo "=== Applying merlinx patches to Linux 6.12 ==="
           cp include/dt-bindings/clock/mt6769-clk.h linux/include/dt-bindings/clock/
           cp drivers/clk/mediatek/clk-mt6769-*.c linux/drivers/clk/mediatek/
-          cat >> linux/drivers/clk/mediatek/Makefile << 'MKEOF'
-obj-$(CONFIG_COMMON_CLK_MT6769_TOPCKGEN) += clk-mt6769-topckgen.o
-obj-$(CONFIG_COMMON_CLK_MT6769_APMIXED) += clk-mt6769-apmixed.o
-obj-$(CONFIG_COMMON_CLK_MT6769_INFRA) += clk-mt6769-infracfg.o
-MKEOF
-          cat >> linux/drivers/clk/mediatek/Kconfig << 'KCEOF'
-
-config COMMON_CLK_MT6769_TOPCKGEN
-	tristate "Clock driver for MediaTek MT6768/MT6769 topckgen"
-	depends on ARCH_MEDIATEK || COMPILE_TEST
-	select COMMON_CLK_MEDIATEK
-	default ARCH_MEDIATEK
-	help
-	  This driver supports MediaTek MT6768/MT6769 top clock generator.
-
-config COMMON_CLK_MT6769_APMIXED
-	tristate "Clock driver for MediaTek MT6768/MT6769 apmixedsys"
-	depends on COMMON_CLK_MT6769_TOPCKGEN
-	help
-	  This driver supports MediaTek MT6768/MT6769 apmixed PLL clocks.
-
-config COMMON_CLK_MT6769_INFRA
-	tristate "Clock driver for MediaTek MT6768/MT6769 infracfg"
-	depends on COMMON_CLK_MT6769_TOPCKGEN
-	help
-	  This driver supports MediaTek MT6768/MT6769 infrastructure clocks.
-KCEOF
+          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_TOPCKGEN) += clk-mt6769-topckgen.o" >> linux/drivers/clk/mediatek/Makefile
+          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_APMIXED) += clk-mt6769-apmixed.o" >> linux/drivers/clk/mediatek/Makefile
+          echo "obj-\$(CONFIG_COMMON_CLK_MT6769_INFRA) += clk-mt6769-infracfg.o" >> linux/drivers/clk/mediatek/Makefile
           cp drivers/pinctrl/mediatek/pinctrl-mt6768.c linux/drivers/pinctrl/mediatek/
-          echo 'obj-$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o' >> linux/drivers/pinctrl/mediatek/Makefile
-          cat >> linux/drivers/pinctrl/mediatek/Kconfig << 'PCEOF'
-
-config PINCTRL_MT6768
-	bool "MediaTek MT6768/MT6769 pin control"
-	depends on ARM64 || COMPILE_TEST
-	depends on ARCH_MEDIATEK
-	default ARM64 && ARCH_MEDIATEK
-	select PINCTRL_MTK
-	help
-	  Pin controller for MediaTek MT6768/MT6769 SoCs (Redmi Note 9).
-PCEOF
+          echo "obj-\$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o" >> linux/drivers/pinctrl/mediatek/Makefile
           cp arch/arm64/boot/dts/mediatek/mt6768.dtsi linux/arch/arm64/boot/dts/mediatek/
           cp arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dts linux/arch/arm64/boot/dts/mediatek/
-          echo 'dtb-$(CONFIG_ARCH_MEDIATEK) += mt6768.dtb
-dtb-$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb' >> linux/arch/arm64/boot/dts/mediatek/Makefile
+          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6768.dtb" >> linux/arch/arm64/boot/dts/mediatek/Makefile
+          echo "dtb-\$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb" >> linux/arch/arm64/boot/dts/mediatek/Makefile
           cp arch/arm64/configs/merlin_defconfig linux/arch/arm64/configs/
           echo "=== Patches applied ==="
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
-            bison flex libssl-dev libelf-dev bc lzop \
-            libncurses5-dev libncurses-dev make zip ccache
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu bison flex libssl-dev libelf-dev bc lzop libncurses5-dev libncurses-dev make zip ccache
           ccache -o max_size=3G
 
       - name: Cache ccache
@@ -93,31 +54,20 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb' >> linux/arch/arm64/bo
       - name: Configure Kernel
         run: |
           cd linux
-          echo "=== Generating config ==="
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- merlin_defconfig
-          echo "=== Key configs ==="
           grep -E "ARCH_MEDIATEK|MT6769|MT6768|PINCTRL_MT6768|COMMON_CLK_MT6769" .config || true
 
       - name: Build Kernel
         id: build
         run: |
           cd linux
-          echo "============================================"
-          echo " Building MerlinX Kernel 6.12 on GitHub"
-          echo " Device: Redmi Note 9 (merlinx)"
-          echo "============================================"
+          echo "=== Building MerlinX Kernel 6.12 ==="
           export CCACHE_DIR=$HOME/.ccache
           START=$(date +%s)
-          make -j$(nproc) O=out \
-            ARCH=arm64 \
-            CROSS_COMPILE=aarch64-linux-gnu- \
-            CC="ccache aarch64-linux-gnu-gcc" \
-            Image.gz-dtb modules
+          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache aarch64-linux-gnu-gcc" Image.gz-dtb modules
           END=$(date +%s)
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
-          echo "============================================"
-          echo " Build Complete in $((END - START)) seconds!"
-          echo "============================================"
+          echo "=== Build Complete in $((END - START)) seconds ==="
 
       - name: Package Kernel
         if: success()
