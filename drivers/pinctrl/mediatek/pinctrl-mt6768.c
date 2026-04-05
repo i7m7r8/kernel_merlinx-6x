@@ -9,8 +9,8 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-#include "pinctrl-mtk-mt6765.h"
 #include "pinctrl-paris.h"
+#include "pinctrl-mtk-common-v2.h"
 
 /* MT6768 pin definitions - minimal set for initial boot
  * Bug 1 fix: correct includes, Bug 5 fix: key pins defined

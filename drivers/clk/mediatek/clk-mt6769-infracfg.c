@@ -3,6 +3,9 @@
  * MediaTek MT6768/MT6769 Infrastructure Clock Driver
  * Based on: vendor 4.14 + mainline clk-mt6779-infracfg.c
  * Adapted for Linux 6.12
+ *
+ * Fix 2: Both register banks now properly registered
+ * Fix 4: Bit shifts >31 moved to second register set
  */
 
 #include <linux/module.h>
@@ -59,9 +62,9 @@ static const struct mtk_gate infra_clks[] = {
 	GATE_INFRA(CLK_INFRA_PMIC_SPI, "infra_pmic_spi", "clk26m", 29),
 	GATE_INFRA(CLK_INFRA_PMIC_WRAP, "infra_pmic_wrap", "clk26m", 30),
 	GATE_INFRA(CLK_INFRA_PMIC_AP_32K, "infra_pmic_ap_32k", "clk32k", 31),
-	/* Bug 4 fix: bits 32-35 moved to second register set (0x4C = 0x48 + 4) */
 };
 
+/* Fix 4: Bits 32-35 moved to second register set (0x4C-0x54) */
 static const struct mtk_gate_regs infra_cg_regs_1 = {
 	.set_ofs = 0x4C,
 	.clr_ofs = 0x50,
@@ -84,6 +87,7 @@ static const struct mtk_clk_desc infracfg_desc = {
 	.clk_lock = &mt6769_clk_lock,
 };
 
+/* Fix 2: infracfg_desc_1 now properly registered via separate platform driver */
 static const struct mtk_clk_desc infracfg_desc_1 = {
 	.clks = infra_clks_1,
 	.num_clks = ARRAY_SIZE(infra_clks_1),
@@ -105,3 +109,20 @@ static struct platform_driver clk_mt6769_infracfg_drv = {
 };
 
 builtin_platform_driver(clk_mt6769_infracfg_drv);
+
+/* Fix 2: Separate driver for second register bank */
+static const struct of_device_id of_match_clk_mt6769_infracfg_1[] = {
+	{ .compatible = "mediatek,mt6769-infracfg-ao", .data = &infracfg_desc_1 },
+	{ .compatible = "mediatek,mt6768-infracfg-ao", .data = &infracfg_desc_1 },
+	{ }
+};
+
+static struct platform_driver clk_mt6769_infracfg_1_drv = {
+	.probe = mtk_clk_simple_probe,
+	.driver = {
+		.name = "clk-mt6769-infracfg-ao",
+		.of_match_table = of_match_clk_mt6769_infracfg_1,
+	},
+};
+
+builtin_platform_driver(clk_mt6769_infracfg_1_drv);

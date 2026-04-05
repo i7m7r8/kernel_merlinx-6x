@@ -126,6 +126,21 @@ static const struct mtk_pll_data apmixed_plls[] = {
 		.vco_reg = 0x0288,
 		.vco_mask = GENMASK(13, 12),
 	},
+
+	/* Fix 3: CCIPLL - required by topckgen ccipll_d3 parent */
+	{
+		.id = CLK_APMIXED_CCIPLL,
+		.name = "ccipll",
+		.reg = 0x0290,
+		.pwr_reg = 0x0294,
+		.en_mask = BIT(0),
+		.pcw_reg = 0x0298,
+		.pcw_bits = GENMASK(23, 0),
+		.pd_reg = 0x0298,
+		.pd_shift = 14,
+		.vco_reg = 0x0298,
+		.vco_mask = GENMASK(13, 12),
+	},
 };
 
 static const struct mtk_clk_desc apmixed_desc = {

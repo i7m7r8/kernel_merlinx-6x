@@ -427,6 +427,8 @@
 
 /* GPU */
 &mali {
+	clocks = <&topckgen CLK_TOP_MMPLL>;
+	clock-names = "gpu";
 	status = "okay";
 };
 

@@ -457,15 +457,18 @@
 			status = "okay";
 		};
 
-		/* Mali GPU */
+		/* Mali GPU - Fix 5: added clocks and power-domains */
 		mali: gpu@13040000 {
-			compatible = "arm,mali-g52";
+			compatible = "arm,mali-g52", "arm,mali-bifrost";
 			reg = <0 0x13040000 0 0x10000>;
 			interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "job", "mmu", "gpu";
+			clocks = <&topckgen CLK_TOP_MMPLL>;
+			clock-names = "gpu";
 			operating-points-v2 = <&gpu_opp_table>;
+			power-domains = <&scpsys 13>; /* MT6768_POWER_DOMAIN_MFG */
 			status = "disabled";
 		};
 
