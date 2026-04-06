@@ -838,7 +838,7 @@
 		};
 
 		mmsys: syscon@14000000 {
-			compatible = "mediatek,mt6768-mmsys", "syscon";
+			compatible = "mediatek,mt6779-mmsys", "mediatek,mt6768-mmsys", "syscon";
 			reg = <0 0x14000000 0 0x1000>;
 		};
 
@@ -911,7 +911,7 @@
 		};
 
 		dsi: dsi@14014000 {
-			compatible = "mediatek,mt6768-dsi", "mediatek,mt6779-dsi";
+			compatible = "mediatek,mt6779-dsi", "mediatek,mt6768-dsi";
 			reg = <0 0x14014000 0 0x1000>,
 			      <0 0x14015000 0 0x1000>;
 			interrupts = <GIC_SPI 210 IRQ_TYPE_LEVEL_LOW>;
@@ -921,7 +921,7 @@
 		};
 
 		mipi_tx0: mipi-dphy@14012000 {
-			compatible = "mediatek,mt6768-mipi-tx", "mediatek,mt6779-mipi-tx";
+			compatible = "mediatek,mt6779-mipi-tx", "mediatek,mt6768-mipi-tx";
 			reg = <0 0x14012000 0 0x1000>;
 			clocks = <&clk26m>;
 			clock-output-names = "mipitx_dsi_ck";
