@@ -474,8 +474,6 @@
 			compatible = "mediatek,mt2701-thermal";
 			reg = <0 0x1100b000 0 0x1000>;
 			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infracfg CLK_INFRA_THERM>;
-			clock-names = "thermal";
 			#thermal-sensor-cells = <1>;
 			nvmem-cells = <&thermal_calibration>;
 			nvmem-cell-names = "calibration-data";
@@ -544,8 +542,6 @@
 		pwm0: pwm@1401e000 {
 			compatible = "mediatek,mt6768-disp-pwm", "mediatek,mt6779-disp-pwm";
 			reg = <0 0x1401e000 0 0x1000>;
-			clocks = <&infracfg CLK_INFRA_PWM0>;
-			clock-names = "pwm";
 			#pwm-cells = <2>;
 			status = "disabled";
 		};
