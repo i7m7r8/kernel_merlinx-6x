@@ -18,3 +18,15 @@ config COMMON_CLK_MT6769_INFRA
 	depends on COMMON_CLK_MT6769_TOPCKGEN
 	help
 	  This driver supports MediaTek MT6768/MT6769 infrastructure clocks.
+
+config COMMON_CLK_MT6779_MM
+	tristate "Clock driver for MediaTek MT6779 multimedia subsystem"
+	depends on ARCH_MEDIATEK || COMPILE_TEST
+	help
+	  This driver supports MediaTek MT6779 multimedia clock gates.
+
+config COMMON_CLK_MT6779_MFG
+	tristate "Clock driver for MediaTek MT6779 MFG (GPU)"
+	depends on COMMON_CLK_MT6779_MM || COMPILE_TEST
+	help
+	  This driver supports MediaTek MT6779 MFG (GPU) clock gates.
