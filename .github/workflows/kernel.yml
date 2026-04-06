@@ -70,82 +70,6 @@ jobs:
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
           echo "Build done in $((END - START))s"
 
-      - name: Package with AnyKernel3
-        if: success()
-        run: |
-          git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git AK3
-          cd AK3
-          rm -f Image* dtb*
-
-          # Copy kernel image as "Image" (matches name="Image" in anykernel.sh)
-          if [ -f ../build/arch/arm64/boot/Image.gz ]; then
-            cp ../build/arch/arm64/boot/Image.gz Image
-          elif [ -f ../build/arch/arm64/boot/Image ]; then
-            cp ../build/arch/arm64/boot/Image Image
-          fi
-
-          # Copy DTB
-          cp ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb . 2>/dev/null || true
-
-          echo "kernel.string=MerlinX-Kernel-6.12" > anykernel.sh
-          echo "do.devicecheck=0" >> anykernel.sh
-          echo "do.modules=0" >> anykernel.sh
-          echo "do.systemless=1" >> anykernel.sh
-          echo "do.cleanup=1" >> anykernel.sh
-          echo "do.cleananykernel=1" >> anykernel.sh
-          echo "name=Image" >> anykernel.sh
-          echo "slotselect=0" >> anykernel.sh
-          echo "patch_vbmeta_flag=0" >> anykernel.sh
-          echo "BLOCK=/dev/block/bootdevice/by-name/boot" >> anykernel.sh
-
-          # Create valid flashable zip preserving META-INF structure
-          zip -r9 ../MerlinX-Kernel-6.12.zip . -x .git* README.md
-          cd ..
-          ls -lh MerlinX-Kernel-6.12.zip
-
-
-      - name: Create boot.img
-        if: success()
-        run: |
-          git clone --depth=1 https://github.com/osm0sis/mkbootimg.git mkbootimg
-          cd mkbootimg
-          make
-          ./mkbootimg --kernel ../build/arch/arm64/boot/Image --dtb ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb --cmdline "console=ttyS0,921600n1 earlycon=uart8250,mmio32,0x11002000 androidboot.selinux=permissive loglevel=8" --base 0x40000000 --pagesize 2048 --kernel_offset 0x00008000 --ramdisk_offset 0x11a88000 --tags_offset 0x07808000 -o ../boot.img
-          cd ..
-          ls -lh boot.img
-
-      - name: Upload boot.img Artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: MerlinX-boot.img
-          path: boot.img
-          retention-days: 30
-      - name: Upload Artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: MerlinX-Kernel-6.12
-          path: MerlinX-Kernel-6.12.zip
-          retention-days: 30
-
-      - name: Build Summary
-        if: always()
-        run: |
-          if [ "${{ steps.build.outcome }}" == "success" ]; then
-            echo "## ✅ Build Success" >> $GITHUB_STEP_SUMMARY
-            echo "- **Kernel**: Linux 6.12 + MT6768/69 drivers" >> $GITHUB_STEP_SUMMARY
-            echo "- **Device**: Redmi Note 9 (merlinx)" >> $GITHUB_STEP_SUMMARY
-            echo "- **Time**: ${{ steps.build.outputs.build_time }}" >> $GITHUB_STEP_SUMMARY
-            echo "- **Format**: AnyKernel3 flashable ZIP" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Download from **Artifacts** section. Flash via TWRP/OrangeFox." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## ❌ Build Failed" >> $GITHUB_STEP_SUMMARY
-            echo "Check logs above." >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Package Firmware
         if: success()
         run: |
           echo "=== Packaging firmware ==="
@@ -164,3 +88,71 @@ jobs:
           name: MerlinX-Firmware
           path: firmware/
           retention-days: 30
+
+      - name: Package AnyKernel3
+        if: success()
+        run: |
+          mkdir -p AK3
+          cd AK3
+
+          # Get AnyKernel3 template
+          git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git ak3-tmp
+          cp -r ak3-tmp/META-INF .
+          cp ak3-tmp/anykernel.sh .
+          rm -rf ak3-tmp
+
+          # Copy kernel Image
+          if [ -f ../build/arch/arm64/boot/Image ]; then
+            cp ../build/arch/arm64/boot/Image .
+          elif [ -f ../build/arch/arm64/boot/Image.gz ]; then
+            cp ../build/arch/arm64/boot/Image.gz Image.gz
+          else
+            echo "No kernel image found!"
+            exit 1
+          fi
+
+          # Copy DTB
+          cp ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb . 2>/dev/null || true
+
+          # Write anykernel.sh - no leading spaces
+          printf '%s\n' \
+            'kernel.string=MerlinX-Kernel-6.12' \
+            'do.devicecheck=0' \
+            'do.modules=0' \
+            'do.systemless=1' \
+            'do.cleanup=1' \
+            'do.cleananykernel=1' \
+            'name=Image' \
+            'slotselect=0' \
+            'patch_vbmeta_flag=0' \
+            'BLOCK=/dev/block/bootdevice/by-name/boot' \
+            > anykernel.sh
+
+          cat anykernel.sh
+
+          # Create zip
+          zip -r9 ../MerlinX-Kernel-6.12.zip * META-INF/.* 2>/dev/null
+          cd ..
+          ls -lh MerlinX-Kernel-6.12.zip
+          unzip -l MerlinX-Kernel-6.12.zip
+
+      - name: Upload Kernel ZIP
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MerlinX-Kernel-6.12
+          path: MerlinX-Kernel-6.12.zip
+          retention-days: 30
+
+      - name: Build Summary
+        if: always()
+        run: |
+          if [ "${{ steps.build.outcome }}" == "success" ]; then
+            echo "## ✅ Build Success" >> $GITHUB_STEP_SUMMARY
+            echo "- **Kernel**: Linux 6.12 + MT6768/69 drivers" >> $GITHUB_STEP_SUMMARY
+            echo "- **Device**: Redmi Note 9 (merlinx)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Format**: AnyKernel3 flashable ZIP for TWRP" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Check logs above." >> $GITHUB_STEP_SUMMARY
+          fi
