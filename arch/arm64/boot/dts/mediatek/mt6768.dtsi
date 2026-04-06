@@ -278,6 +278,8 @@
 			compatible = "mediatek,mt6577-uart";
 			reg = <0 0x11002000 0 0x1000>;
 			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&infracfg CLK_INFRA_UART0>;
+			clock-names = "uart";
 			status = "okay";
 		};
 
@@ -403,6 +405,33 @@
 			reg = <0 0x10006000 0 0x1000>;
 		};
 
+		/* IOMMU - memory management */
+		iommu0: iommu@10205000 {
+			compatible = "mediatek,mt6779-iommu", "mediatek,mt6779-m4u";
+			reg = <0 0x10205000 0 0x1000>;
+			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_LOW>;
+			#iommu-cells = <1>;
+		};
+
+		/* SMI - Smart Multimedia Interface */
+		smi_common: smi@1401c000 {
+			compatible = "mediatek,mt6779-smi-common", "mediatek,mt6765-smi-common";
+			reg = <0 0x1401c000 0 0x1000>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "apb", "smi";
+		};
+
+		/* APDMA - audio DMA controller */
+		apdma: dma-controller@11330000 {
+			compatible = "mediatek,mt6765-apdma", "mediatek,mt2701-apdma";
+			reg = <0 0x11330000 0 0x1000>;
+			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_LOW>;
+			#dma-cells = <2>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "apdma", "apdma_mux";
+			status = "okay";
+		};
+
 		pinctrl: pinctrl@10005000 {
 			compatible = "mediatek,mt6769z-pinctrl", "mediatek,mt6769-pinctrl", "mediatek,mt6768-pinctrl";
 			reg = <0 0x10005000 0 0x1000>;
@@ -445,6 +474,8 @@
 			compatible = "mediatek,mt2701-thermal";
 			reg = <0 0x1100b000 0 0x1000>;
 			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&infracfg CLK_INFRA_THERM>;
+			clock-names = "thermal";
 			#thermal-sensor-cells = <1>;
 			nvmem-cells = <&thermal_calibration>;
 			nvmem-cell-names = "calibration-data";
@@ -513,6 +544,8 @@
 		pwm0: pwm@1401e000 {
 			compatible = "mediatek,mt6768-disp-pwm", "mediatek,mt6779-disp-pwm";
 			reg = <0 0x1401e000 0 0x1000>;
+			clocks = <&infracfg CLK_INFRA_PWM0>;
+			clock-names = "pwm";
 			#pwm-cells = <2>;
 			status = "disabled";
 		};
