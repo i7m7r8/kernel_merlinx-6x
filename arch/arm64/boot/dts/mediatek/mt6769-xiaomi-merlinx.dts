@@ -546,6 +546,83 @@
 	};
 };
 
+/* I2C6 - MT6370 sub-PMIC (charger, Type-C PD, flash LED) */
+&i2c6 {
+	status = "okay";
+
+	mt6370_pmu: mt6370-pmu@34 {
+		compatible = "richtek,mt6370-pmu";
+		reg = <0x34>;
+		interrupt-parent = <&pinctrl>;
+		interrupts = <149 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-names = "irq";
+
+		mt6370_charger: charger {
+			compatible = "richtek,mt6370-charger";
+			support_pd;
+			support_typec;
+			non_std_ac_charger_current = <3000000>;
+			pd_charger_current = <3000000>;
+			ta_ac_charger_current = <3000000>;
+			usb_charger_current = <500000>;
+			usb_charger_current_unconfigured = <500000>;
+			usb_charger_current_configured = <1500000>;
+			min_charger_voltage = <4400000>;
+			min_charge_temp_plus_x_degree = <5000>;
+			temp_t0_thres = <5000>;
+			temp_t1_thres = <10000>;
+			temp_t2_thres = <20000>;
+			temp_t3_thres = <45000>;
+			temp_t4_thres = <55000>;
+			safety_timer = <3600>;
+			pe20_ichg_level_threshold = <3000000>;
+			ta_stop_battery_soc = <95>;
+			pd_stop_battery_soc = <95>;
+			pe40_stop_battery_soc = <95>;
+		};
+
+		mt6370_typec: typec_port0 {
+			compatible = "richtek,mt6370-tcpc";
+			typec,receptacle;
+			pd,source-pdo-size = <4>;
+			pd,source-pdo-data = <0x000193C8 0x0002D12C 0x0003C12C 0x0003C190>;
+			pd,sink-pdo-size = <4>;
+			pd,sink-pdo-data = <0x000193C8 0x0002D12C 0x0003C12C 0x0003C190>;
+			pd,source-cap-ext = <0x00010012 0x00010016 0x00010028>;
+		};
+
+		mt6370_fled1: mt6370-fled1 {
+			compatible = "richtek,mt6370-fled1";
+			strobe_cur = <1500000>;
+			torch_cur = <375000>;
+			strobe_timeout = <1300>;
+		};
+
+		mt6370_fled2: mt6370-fled2 {
+			compatible = "richtek,mt6370-fled2";
+			strobe_cur = <1500000>;
+			torch_cur = <375000>;
+			strobe_timeout = <1300>;
+		};
+
+		mt6370_ldo: ldo {
+			compatible = "richtek,mt6370-ldo";
+			regulator-compatible = "ldo";
+			regulator-name = "mt6370_ldo";
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3600000>;
+		};
+
+		mt6370_dsv: dsv {
+			compatible = "richtek,mt6370-dsv";
+			regulator-compatible = "dsv";
+			regulator-name = "mt6370_dsv";
+			regulator-min-microvolt = <4600000>;
+			regulator-max-microvolt = <6500000>;
+		};
+	};
+};
+
 /* SPI0 */
 &spi0 {
 	status = "okay";
