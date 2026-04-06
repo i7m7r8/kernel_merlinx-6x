@@ -84,11 +84,6 @@ static const struct mtk_clk_desc infracfg_desc = {
 };
 
 /* Second bank descriptor */
-static const struct mtk_clk_desc infracfg_desc_1 = {
-	.clks = infra_clks_1,
-	.num_clks = ARRAY_SIZE(infra_clks_1),
-	.clk_lock = &mt6769_clk_lock,
-};
 
 static const struct of_device_id of_match_clk_mt6769_infracfg[] = {
 	{ .compatible = "mediatek,mt6769-infracfg", .data = &infracfg_desc },
@@ -98,29 +93,34 @@ static const struct of_device_id of_match_clk_mt6769_infracfg[] = {
 };
 
 static struct platform_driver clk_mt6769_infracfg_drv = {
-	.probe = mtk_clk_simple_probe,
+	.probe = mtk_mt6769_infracfg_probe,
 	.driver = {
 		.name = "clk-mt6769-infracfg",
 		.of_match_table = of_match_clk_mt6769_infracfg,
 	},
 };
 
+
+/* Second bank descriptor for audio/MD clocks */
+static const struct mtk_clk_desc infracfg_desc_1 = {
+	.clks = infra_clks_1,
+	.num_clks = ARRAY_SIZE(infra_clks_1),
+	.clk_lock = &mt6769_clk_lock,
+};
+
+static int mtk_mt6769_infracfg_probe(struct platform_device *pdev)
+{
+	int ret;
+
+	ret = mtk_clk_simple_probe(pdev);
+	if (ret)
+		return ret;
+
+	/* Register second gate bank on same node */
+	return mtk_clk_register_gates(&pdev->dev, infra_clks_1, ARRAY_SIZE(infra_clks_1), &mt6769_clk_lock);
+}
+
 builtin_platform_driver(clk_mt6769_infracfg_drv);
 
 /* Separate driver for second register bank */
-static const struct of_device_id of_match_clk_mt6769_infracfg_1[] = {
-	{ .compatible = "mediatek,mt6769-infracfg-ao", .data = &infracfg_desc_1 },
-	{ .compatible = "mediatek,mt6769z-infracfg-ao", .data = &infracfg_desc_1 },
-	{ .compatible = "mediatek,mt6768-infracfg-ao", .data = &infracfg_desc_1 },
-	{ }
-};
 
-static struct platform_driver clk_mt6769_infracfg_1_drv = {
-	.probe = mtk_clk_simple_probe,
-	.driver = {
-		.name = "clk-mt6769-infracfg-ao",
-		.of_match_table = of_match_clk_mt6769_infracfg_1,
-	},
-};
-
-builtin_platform_driver(clk_mt6769_infracfg_1_drv);

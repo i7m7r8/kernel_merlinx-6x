@@ -384,7 +384,6 @@
 
 		infracfg: syscon@10001000 {
 			compatible = "mediatek,mt6769z-infracfg", "mediatek,mt6769-infracfg", "mediatek,mt6768-infracfg",
-				     "mediatek,mt6769z-infracfg-ao", "mediatek,mt6769-infracfg-ao", "mediatek,mt6768-infracfg-ao",
 				     "syscon";
 			reg = <0 0x10001000 0 0x1000>;
 		};

@@ -16,6 +16,8 @@
 #include <dt-bindings/clock/mt6769-clk.h>
 
 static DEFINE_SPINLOCK(mt6769_clk_lock);
+FACTOR(CLK_TOP_MAINPLL_D2, "mainpll_d2", "mainpll", 1, 2),
+	FACTOR(CLK_TOP_MAINPLL_D3, "mainpll_d3", "mainpll", 1, 3),
 
 /* Fixed factor clocks */
 static const struct mtk_fixed_factor top_factor_clks[] = {
