@@ -455,6 +455,115 @@
 			clock-names = "apb", "smi";
 		};
 
+		/* CAMSYS - Camera System */
+		camsys: syscon@1a000000 {
+			compatible = "mediatek,mt6768-camsys", "syscon";
+			reg = <0 0x1a000000 0 0x1000>;
+		};
+
+		/* VDEC - Video Decoder */
+		vdec: vdec@16020000 {
+			compatible = "mediatek,mt6779-vcodec-dec", "mediatek,mt6779-vdec";
+			reg = <0 0x16020000 0 0x1000>;
+			interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>;
+			clock-names = "vdec";
+			iommus = <&iommu0 7>;
+			mediatek,larb = <&smi_larb1>;
+			status = "disabled";
+		};
+
+		vdec_gcon: vdec_gcon@16000000 {
+			compatible = "mediatek,mt6779-vdec-gcon", "syscon";
+			reg = <0 0x16000000 0 0x1000>;
+		};
+
+		/* VENC - Video Encoder */
+		venc: venc@17020000 {
+			compatible = "mediatek,mt6779-vcodec-enc", "mediatek,mt6779-venc";
+			reg = <0 0x17020000 0 0x1000>;
+			interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>;
+			clock-names = "venc";
+			iommus = <&iommu0 9>;
+			mediatek,larb = <&smi_larb2>;
+			status = "disabled";
+		};
+
+		venc_gcon: venc_gcon@17000000 {
+			compatible = "mediatek,mt6779-venc-gcon", "syscon";
+			reg = <0 0x17000000 0 0x1000>;
+		};
+
+		/* VENC JPEG */
+		venc_jpg: venc_jpg@17030000 {
+			compatible = "mediatek,mt6779-jpgenc";
+			reg = <0 0x17030000 0 0x1000>;
+			interrupts = <GIC_SPI 206 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>;
+			clock-names = "jpgenc";
+		};
+
+		/* SMI LARBs for VDEC/VENC */
+		smi_larb1: smi_larb1@16010000 {
+			compatible = "mediatek,mt6779-smi-larb", "mediatek,mt6765-smi-larb";
+			reg = <0 0x16010000 0 0x1000>;
+			clocks = <&vdec_gcon CLK_VDEC_LARB_CG>;
+			clock-names = "larb";
+			iommus = <&iommu0 2>;
+			power-domains = <&scpsys MT6768_POWER_DOMAIN_VDEC>;
+		};
+
+		smi_larb2: smi_larb2@15021000 {
+			compatible = "mediatek,mt6779-smi-larb", "mediatek,mt6765-smi-larb";
+			reg = <0 0x15021000 0 0x1000>;
+			clocks = <&venc_gcon CLK_VENC_LARB_CG>;
+			clock-names = "larb";
+			iommus = <&iommu0 3>;
+			power-domains = <&scpsys MT6768_POWER_DOMAIN_VENC>;
+		};
+
+		smi_larb4: smi_larb4@17010000 {
+			compatible = "mediatek,mt6779-smi-larb", "mediatek,mt6765-smi-larb";
+			reg = <0 0x17010000 0 0x1000>;
+			clocks = <&venc_gcon CLK_VENC_LARB_CG>;
+			clock-names = "larb";
+			iommus = <&iommu0 4>;
+		};
+
+		/* SCP - Sensor Communication Processor */
+		scp: scp@10500000 {
+			compatible = "mediatek,mt6768-scp", "mediatek,scp";
+			reg = <0 0x10500000 0 0x20000>;
+			clocks = <&clk26m>;
+			clock-names = "scp";
+			interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
+			sram_size = <0x80000>;
+			status = "disabled";
+		};
+
+		/* AFE PCM - Audio Front End */
+		afe_pcm: mt6768-afe-pcm@11220000 {
+			compatible = "mediatek,mt6768-audio";
+			reg = <0 0x11220000 0 0x10000>;
+			interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>;
+			clock-names = "audio";
+			status = "disabled";
+		};
+
+		/* MFG - 3D Graphics config */
+		mfg_cfg: mfg_cfg@13000000 {
+			compatible = "mediatek,mt6768-mfgcfg", "syscon";
+			reg = <0 0x13000000 0 0x1000>;
+		};
+
+		/* WiFi reserve memory */
+		reserve-memory@16030000 {
+			reg = <0 0x16030000 0 0x100000>;
+			no-map;
+		};
+
 		/* APDMA - audio DMA controller */
 		apdma: dma-controller@11330000 {
 			compatible = "mediatek,mt6765-apdma", "mediatek,mt2701-apdma";
@@ -552,6 +661,75 @@
 		mmsys: syscon@14000000 {
 			compatible = "mediatek,mt6768-mmsys", "syscon";
 			reg = <0 0x14000000 0 0x1000>;
+		};
+
+		/* Display Mutex */
+		disp_mutex0: disp_mutex0@14001000 {
+			compatible = "mediatek,mt6768-disp-mutex", "mediatek,mt6779-disp-mutex";
+			reg = <0 0x14001000 0 0x1000>;
+			interrupts = <GIC_SPI 195 IRQ_TYPE_LEVEL_LOW>;
+		};
+
+		/* MDP - Media Data Path */
+		mdp_rdma0: mdp_rdma0@14004000 {
+			compatible = "mediatek,mt6779-mdp-rdma", "mediatek,mt6779-mdp_rdma0";
+			reg = <0 0x14004000 0 0x1000>;
+			clocks = <&mmsys CLK_MM_MDP_RDMA0>;
+			interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_LOW>;
+			iommus = <&iommu0 15>;
+		};
+
+		mdp_rsz0: mdp_rsz0@14006000 {
+			compatible = "mediatek,mt6779-mdp-rsz", "mediatek,mt6779-mdp_rsz0";
+			reg = <0 0x14006000 0 0x1000>;
+			clocks = <&mmsys CLK_MM_MDP_RSZ0>;
+		};
+
+		mdp_rsz1: mdp_rsz1@14007000 {
+			compatible = "mediatek,mt6779-mdp-rsz", "mediatek,mt6779-mdp_rsz1";
+			reg = <0 0x14007000 0 0x1000>;
+			clocks = <&mmsys CLK_MM_MDP_RSZ1>;
+		};
+
+		mdp_wdma0: mdp_wdma0@14008000 {
+			compatible = "mediatek,mt6779-mdp-wdma", "mediatek,mt6779-mdp_wdma0";
+			reg = <0 0x14008000 0 0x1000>;
+			clocks = <&mmsys CLK_MM_MDP_WDMA>;
+			interrupts = <GIC_SPI 197 IRQ_TYPE_LEVEL_LOW>;
+			iommus = <&iommu0 16>;
+		};
+
+		mdp_wrot0: mdp_wrot0@14009000 {
+			compatible = "mediatek,mt6779-mdp-wrot", "mediatek,mt6779-mdp_wrot0";
+			reg = <0 0x14009000 0 0x1000>;
+			clocks = <&mmsys CLK_MM_MDP_WROT0>;
+			interrupts = <GIC_SPI 198 IRQ_TYPE_LEVEL_LOW>;
+			iommus = <&iommu0 17>;
+		};
+
+		mdp_tdshp0: mdp_tdshp0@1400a000 {
+			compatible = "mediatek,mt6779-mdp-tdshp", "mediatek,mt6779-mdp_tdshp0";
+			reg = <0 0x1400a000 0 0x1000>;
+			clocks = <&mmsys CLK_MM_MDP_TDSHP0>;
+		};
+
+		/* SMI - Smart Multimedia Interface */
+		smi_larb0: smi_larb0@14003000 {
+			compatible = "mediatek,mt6779-smi-larb", "mediatek,mt6765-smi-larb";
+			reg = <0 0x14003000 0 0x1000>;
+			clocks = <&mmsys CLK_MM_SMI_COMMON>, <&mmsys CLK_MM_SMI_GALS>;
+			clock-names = "apb", "smi";
+			mediatek,smi = <&smi_common>;
+			iommus = <&iommu0 0>;
+			power-domains = <&scpsys MT6768_POWER_DOMAIN_DISP>;
+		};
+
+		smi_larb3: smi_larb3@1a002000 {
+			compatible = "mediatek,mt6779-smi-larb", "mediatek,mt6765-smi-larb";
+			reg = <0 0x1a002000 0 0x1000>;
+			clocks = <&camsys CLK_CAM_SMI_COMMON>;
+			clock-names = "smi";
+			iommus = <&iommu0 5>;
 		};
 
 		dsi: dsi@14014000 {
