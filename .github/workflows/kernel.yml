@@ -87,18 +87,16 @@ jobs:
           # Copy DTB
           cp ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb . 2>/dev/null || true
 
-          cat << 'AK3EOF' | sed 's/^ *//' > anykernel.sh
-          kernel.string=MerlinX-Kernel-6.12
-          do.devicecheck=0
-          do.modules=0
-          do.systemless=1
-          do.cleanup=1
-          do.cleananykernel=1
-          name="Image"
-          slotselect=0
-          patch_vbmeta_flag=0
-          BLOCK=/dev/block/bootdevice/by-name/boot
-AK3EOF
+          echo "kernel.string=MerlinX-Kernel-6.12" > anykernel.sh
+          echo "do.devicecheck=0" >> anykernel.sh
+          echo "do.modules=0" >> anykernel.sh
+          echo "do.systemless=1" >> anykernel.sh
+          echo "do.cleanup=1" >> anykernel.sh
+          echo "do.cleananykernel=1" >> anykernel.sh
+          echo "name=Image" >> anykernel.sh
+          echo "slotselect=0" >> anykernel.sh
+          echo "patch_vbmeta_flag=0" >> anykernel.sh
+          echo "BLOCK=/dev/block/bootdevice/by-name/boot" >> anykernel.sh
 
           # Create valid flashable zip preserving META-INF structure
           zip -r9 ../MerlinX-Kernel-6.12.zip . -x .git* README.md
