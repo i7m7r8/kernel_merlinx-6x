@@ -418,6 +418,195 @@
 			status = "okay";
 		};
 
+		/* USB 1.1 PHY interface */
+		usb1p_sif: usb1p_sif@11210000 {
+			compatible = "mediatek,mtk-usb1p-sif";
+			reg = <0 0x11210000 0 0x1000>;
+		};
+
+		/* AP IRQ - peripheral interrupt controller */
+		apirq: apirq@1000b000 {
+			compatible = "mediatek,mt6768-apirq", "syscon";
+			reg = <0 0x1000b000 0 0x1000>;
+		};
+
+		/* Peripheral config - clock/power gating */
+		pericfg: pericfg@10003000 {
+			compatible = "mediatek,mt6768-pericfg", "syscon";
+			reg = <0 0x10003000 0 0x1000>;
+		};
+
+		/* Sleep controller - suspend/resume */
+		sleep: sleep@10006000 {
+			compatible = "mediatek,mt6768-sleep", "syscon";
+			reg = <0 0x10006000 0 0x1000>;
+		};
+
+		/* APDMA controller */
+		dma_ctrl: dma-controller@11000980 {
+			compatible = "mediatek,mt6768-apdma", "syscon";
+			reg = <0 0x11000980 0 0x1000>;
+		};
+
+		/* EEM - Enhanced Error Management (thermal/DVFS) */
+		eem_fsm: eem_fsm@1100b000 {
+			compatible = "mediatek,mt6768-eem", "syscon";
+			reg = <0 0x1100b000 0 0x1000>;
+		};
+
+		/* IO config - voltage level shifters */
+		io_cfg_lb: io_cfg_lb@10002400 {
+			compatible = "mediatek,mt6768-iocfg", "syscon";
+			reg = <0 0x10002400 0 0x1000>;
+		};
+
+		io_cfg_lm: io_cfg_lm@10002200 {
+			compatible = "mediatek,mt6768-iocfg", "syscon";
+			reg = <0 0x10002200 0 0x1000>;
+		};
+
+		io_cfg_lt: io_cfg_lt@10003200 {
+			compatible = "mediatek,mt6768-iocfg", "syscon";
+			reg = <0 0x10003200 0 0x1000>;
+		};
+
+		io_cfg_rb: io_cfg_rb@10002a00 {
+			compatible = "mediatek,mt6768-iocfg", "syscon";
+			reg = <0 0x10002a00 0 0x1000>;
+		};
+
+		io_cfg_rm: io_cfg_rm@10002800 {
+			compatible = "mediatek,mt6768-iocfg", "syscon";
+			reg = <0 0x10002800 0 0x1000>;
+		};
+
+		io_cfg_rt: io_cfg_rt@10002c00 {
+			compatible = "mediatek,mt6768-iocfg", "syscon";
+			reg = <0 0x10002c00 0 0x1000>;
+		};
+
+		io_cfg_tl: io_cfg_tl@10002e00 {
+			compatible = "mediatek,mt6768-iocfg", "syscon";
+			reg = <0 0x10002e00 0 0x1000>;
+		};
+
+		/* MIPI CSI PHY - camera sensor interface */
+		mipi_rx_ana_csi0a: mipi_rx_ana_csi0a@11c10000 {
+			compatible = "mediatek,mt6768-mipi-rx-ana";
+			reg = <0 0x11c10000 0 0x1000>;
+		};
+
+		mipi_rx_ana_csi0b: mipi_rx_ana_csi0b@11c11000 {
+			compatible = "mediatek,mt6768-mipi-rx-ana";
+			reg = <0 0x11c11000 0 0x1000>;
+		};
+
+		mipi_rx_ana_csi1a: mipi_rx_ana_csi1a@11c12000 {
+			compatible = "mediatek,mt6768-mipi-rx-ana";
+			reg = <0 0x11c12000 0 0x1000>;
+		};
+
+		mipi_rx_ana_csi1b: mipi_rx_ana_csi1b@11c13000 {
+			compatible = "mediatek,mt6768-mipi-rx-ana";
+			reg = <0 0x11c13000 0 0x1000>;
+		};
+
+		mipi_rx_ana_csi2a: mipi_rx_ana_csi2a@11c14000 {
+			compatible = "mediatek,mt6768-mipi-rx-ana";
+			reg = <0 0x11c14000 0 0x1000>;
+		};
+
+		mipi_rx_ana_csi2b: mipi_rx_ana_csi2b@11c15000 {
+			compatible = "mediatek,mt6768-mipi-rx-ana";
+			reg = <0 0x11c15000 0 0x1000>;
+		};
+
+		/* Camera HW interface */
+		kd_camera_hw1: kd_camera_hw1@1a040000 {
+			compatible = "mediatek,mt6768-kd-camera-hw";
+			reg = <0 0x1a040000 0 0x1000>;
+		};
+
+		/* WiFi node */
+		wifi: wifi@18000000 {
+			compatible = "mediatek,mt7663s";
+			reg = <0 0x18000000 0 0x200000>;
+			interrupt-parent = <&pinctrl>;
+			interrupts = <146 IRQ_TYPE_LEVEL_LOW>;
+			status = "disabled";
+		};
+
+		wifi_reserve_memory: wifi-reserve-memory {
+			reg = <0 0x18000000 0 0x200000>;
+			no-map;
+		};
+
+		/* PWRAP sub-nodes */
+		pwrap_md32: pwrap_md32@10448000 {
+			compatible = "mediatek,mt6768-pwrap-md32";
+			reg = <0 0x10448000 0 0x1000>;
+		};
+
+		/* I2C3, I2C4, I2C5 */
+		i2c3: i2c@1100f000 {
+			compatible = "mediatek,mt6577-i2c";
+			reg = <0 0x1100f000 0 0x1000>,
+			      <0 0x11c60000 0 0x1000>;
+			interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "main", "dma";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		i2c4: i2c@11011000 {
+			compatible = "mediatek,mt6577-i2c";
+			reg = <0 0x11011000 0 0x1000>,
+			      <0 0x11c70000 0 0x1000>;
+			interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "main", "dma";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		i2c5: i2c@11016000 {
+			compatible = "mediatek,mt6577-i2c";
+			reg = <0 0x11016000 0 0x1000>,
+			      <0 0x11c80000 0 0x1000>;
+			interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>, <&clk26m>;
+			clock-names = "main", "dma";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		/* Additional SPI buses */
+		spi1: spi@11010000 {
+			compatible = "mediatek,mt6589-spi";
+			reg = <0 0x11010000 0 0x1000>;
+			interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>;
+			clock-names = "main";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		spi2: spi@11012000 {
+			compatible = "mediatek,mt6589-spi";
+			reg = <0 0x11012000 0 0x1000>;
+			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&clk26m>;
+			clock-names = "main";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
 		infracfg: syscon@10001000 {
 			compatible = "mediatek,mt6769z-infracfg", "mediatek,mt6769-infracfg", "mediatek,mt6768-infracfg",
 				     "syscon";
