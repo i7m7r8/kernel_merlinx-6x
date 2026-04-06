@@ -96,16 +96,11 @@ jobs:
           mkdir -p AK3
           cd AK3
 
-          # Get AnyKernel3 template
-          git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git ak3-tmp
-
-          # Copy FULL AnyKernel3 structure (META-INF, tools, anykernel.sh, ramdisk, etc.)
-          cp -r ak3-tmp/META-INF .
-          cp -r ak3-tmp/tools .
-          cp -r ak3-tmp/ramdisk .
-          cp ak3-tmp/LICENSE .
-          cp ak3-tmp/README.md .
-          rm -rf ak3-tmp
+          # Use bundled working AnyKernel3 tools (latest AK3 magiskboot breaks on MTK boot images)
+          cp -r ../patches/anykernel3-tools/META-INF .
+          cp -r ../patches/anykernel3-tools/tools .
+          cp -r ../patches/anykernel3-tools/ramdisk .
+          cp ../patches/anykernel3-tools/LICENSE .
 
           # Create placeholder directories
           mkdir -p modules/system/lib/modules
@@ -126,7 +121,7 @@ jobs:
           # Copy DTB
           cp ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb . 2>/dev/null || true
 
-          # Write proper anykernel.sh that sources ak3-core.sh and calls dump_boot/write_boot
+          # Write proper anykernel.sh - uses dump_boot/write_boot which works with this AK3 version
           cat > anykernel.sh << 'AK3EOF'
           ### AnyKernel3 Ramdisk Mod Script
           ## osm0sis @ xda-developers
@@ -162,10 +157,10 @@ jobs:
           # import functions/variables and setup patching - see for reference (DO NOT REMOVE)
           . tools/ak3-core.sh && attributes;
 
-          # boot install - split_boot/flash_boot skips ramdisk (MTK devices often have no ramdisk in boot)
-          split_boot; # use split_boot to skip ramdisk unpack, e.g. for devices with init_boot ramdisk
+          # boot install
+          dump_boot; # use split_boot to skip ramdisk unpack, e.g. for devices with init_boot ramdisk
 
-          flash_boot; # use flash_boot to skip ramdisk repack, e.g. for devices with init_boot ramdisk
+          write_boot; # use flash_boot to skip ramdisk repack, e.g. for devices with init_boot ramdisk
           ## end boot install
           AK3EOF
 
