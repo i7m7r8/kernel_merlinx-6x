@@ -108,18 +108,32 @@ jobs:
           touch modules/system/lib/modules/placeholder
           touch patch/placeholder
 
-          # Copy kernel Image
+          # Build Image.gz-dtb (required for MTK boot - must be gzipped with DTB appended)
           if [ -f ../build/arch/arm64/boot/Image ]; then
-            cp ../build/arch/arm64/boot/Image .
+            DTB=../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb
+            gzip -c ../build/arch/arm64/boot/Image > Image.gz
+            if [ -f "$DTB" ]; then
+              cat Image.gz "$DTB" > Image.gz-dtb
+              rm Image.gz
+              echo "Created Image.gz-dtb (gzipped kernel + appended DTB)"
+            else
+              mv Image.gz Image.gz-dtb
+              echo "Created Image.gz-dtb (gzipped kernel, no DTB found)"
+            fi
           elif [ -f ../build/arch/arm64/boot/Image.gz ]; then
-            cp ../build/arch/arm64/boot/Image.gz .
+            DTB=../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb
+            if [ -f "$DTB" ]; then
+              cat ../build/arch/arm64/boot/Image.gz "$DTB" > Image.gz-dtb
+              echo "Created Image.gz-dtb from existing Image.gz + DTB"
+            else
+              cp ../build/arch/arm64/boot/Image.gz Image.gz-dtb
+              echo "Created Image.gz-dtb (copied Image.gz)"
+            fi
           else
             echo "No kernel image found!"
             exit 1
           fi
-
-          # Copy DTB
-          cp ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb . 2>/dev/null || true
+          ls -lh Image.gz-dtb
 
           # Write proper anykernel.sh - uses dump_boot/write_boot which works with this AK3 version
           cat > anykernel.sh << 'AK3EOF'
@@ -153,6 +167,7 @@ jobs:
           is_slot_device=0;
           ramdisk_compression=auto;
           patch_vbmeta_flag=auto;
+          override_dtbo=0;
 
           # import functions/variables and setup patching - see for reference (DO NOT REMOVE)
           . tools/ak3-core.sh && attributes;
