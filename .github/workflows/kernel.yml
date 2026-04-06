@@ -73,17 +73,22 @@ jobs:
       - name: Package with AnyKernel3
         if: success()
         run: |
-          git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git AnyKernel3
-          cd AnyKernel3
+          git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git AK3
+          cd AK3
           rm -f Image* dtb*
-          if [ -f ../build/arch/arm64/boot/Image.gz ]; then
-            cp ../build/arch/arm64/boot/Image.gz .
-          elif [ -f ../build/arch/arm64/boot/Image ]; then
-            cp ../build/arch/arm64/boot/Image .
-          fi
-          cp ../build/arch/arm64/boot/dts/mediatek/*.dtb . 2>/dev/null || true
 
-          cat > anykernel.sh << 'EOF'
+          # Copy kernel image as "Image" (matches name="Image" in anykernel.sh)
+          if [ -f ../build/arch/arm64/boot/Image.gz ]; then
+            cp ../build/arch/arm64/boot/Image.gz Image
+          elif [ -f ../build/arch/arm64/boot/Image ]; then
+            cp ../build/arch/arm64/boot/Image Image
+          fi
+
+          # Copy DTB
+          cp ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb . 2>/dev/null || true
+
+          # Create proper anykernel.sh
+          cat > anykernel.sh << 'AK3EOF'
           kernel.string=MerlinX-Kernel-6.12
           do.devicecheck=0
           do.modules=0
@@ -94,11 +99,12 @@ jobs:
           slotselect=0
           patch_vbmeta_flag=0
           BLOCK=/dev/block/bootdevice/by-name/boot
-          EOF
+          AK3EOF
 
-          zip -r9 ../MerlinX-Kernel-6.12-AnyKernel3.zip . -x .git README.md *placeholder
+          # Create valid flashable zip preserving META-INF structure
+          zip -r9 ../MerlinX-Kernel-6.12.zip . -x .git* README.md
           cd ..
-          ls -lh MerlinX-Kernel-6.12-AnyKernel3.zip
+          ls -lh MerlinX-Kernel-6.12.zip
 
       - name: Upload Artifact
         if: success()
