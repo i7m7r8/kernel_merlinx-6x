@@ -99,13 +99,6 @@
 /* PMIC Regulators - MT6358 */
 &pmic {
 	regulators {
-		vdram1: buck-vdram1 {
-			regulator-name = "vdram1";
-			regulator-min-microvolt = <500000>;
-			regulator-max-microvolt = <2087500>;
-			regulator-always-on;
-		};
-
 		vcore: buck-vcore {
 			regulator-name = "vcore";
 			regulator-min-microvolt = <500000>;
@@ -119,22 +112,86 @@
 			regulator-max-microvolt = <3650000>;
 		};
 
-		vcn18: ldo-vcn18 {
-			regulator-name = "vcn18";
-			regulator-min-microvolt = <1800000>;
-			regulator-max-microvolt = <1800000>;
+		vgpu: buck-vgpu {
+			regulator-name = "vgpu";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
 		};
 
-		vcn28: ldo-vcn28 {
-			regulator-name = "vcn28";
+		vmodem: buck-vmodem {
+			regulator-name = "vmodem";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+			regulator-always-on;
+		};
+
+		vproc11: buck-vproc11 {
+			regulator-name = "vproc11";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+			regulator-always-on;
+		};
+
+		vproc12: buck-vproc12 {
+			regulator-name = "vproc12";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+			regulator-always-on;
+		};
+
+		vdram1: buck-vdram1 {
+			regulator-name = "vdram1";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <2087500>;
+			regulator-always-on;
+		};
+
+		vs1: buck-vs1 {
+			regulator-name = "vs1";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <2087500>;
+		};
+
+		vs2: buck-vs2 {
+			regulator-name = "vs2";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <2087500>;
+		};
+
+		va09: ldo-va09 {
+			regulator-name = "va09";
+			regulator-min-microvolt = <900000>;
+			regulator-max-microvolt = <900000>;
+		};
+
+		vaud28: ldo-vaud28 {
+			regulator-name = "vaud28";
 			regulator-min-microvolt = <2800000>;
 			regulator-max-microvolt = <2800000>;
 		};
 
-		vio18: ldo-vio18 {
-			regulator-name = "vio18";
+		vaux18: ldo-vaux18 {
+			regulator-name = "vaux18";
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
+		};
+
+		vbif28: ldo-vbif28 {
+			regulator-name = "vbif28";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+
+		vcama1: ldo-vcama1 {
+			regulator-name = "vcama1";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+
+		vcama2: ldo-vcama2 {
+			regulator-name = "vcama2";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <2800000>;
 		};
 
 		vcamd: ldo-vcamd {
@@ -149,6 +206,73 @@
 			regulator-max-microvolt = <1800000>;
 		};
 
+		vcn18: ldo-vcn18 {
+			regulator-name = "vcn18";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		vcn28: ldo-vcn28 {
+			regulator-name = "vcn28";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+
+		vcn33_bt: ldo-vcn33-bt {
+			regulator-name = "vcn33_bt";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3600000>;
+		};
+
+		vcn33_wifi: ldo-vcn33-wifi {
+			regulator-name = "vcn33_wifi";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3600000>;
+		};
+
+		vdram2: ldo-vdram2 {
+			regulator-name = "vdram2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		vemc: ldo-vemc {
+			regulator-name = "vemc";
+			regulator-min-microvolt = <2900000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+		};
+
+		vefuse: ldo-vefuse {
+			regulator-name = "vefuse";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <2200000>;
+		};
+
+		vfe28: ldo-vfe28 {
+			regulator-name = "vfe28";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+
+		vio18: ldo-vio18 {
+			regulator-name = "vio18";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		vio28: ldo-vio28 {
+			regulator-name = "vio28";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+
+		vldo28: ldo-vldo28 {
+			regulator-name = "vldo28";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+
 		vmc: ldo-vmc {
 			regulator-name = "vmc";
 			regulator-min-microvolt = <1800000>;
@@ -161,10 +285,77 @@
 			regulator-max-microvolt = <3300000>;
 		};
 
+		vsim1: ldo-vsim1 {
+			regulator-name = "vsim1";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
+		vsim2: ldo-vsim2 {
+			regulator-name = "vsim2";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
+		vusb: ldo-vusb {
+			regulator-name = "vusb";
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
 		vibr: ldo-vibr {
 			regulator-name = "vibr";
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <3300000>;
+		};
+
+		vrf12: ldo-vrf12 {
+			regulator-name = "vrf12";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+		};
+
+		vrf18: ldo-vrf18 {
+			regulator-name = "vrf18";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		vsram_gpu: ldo-vsram-gpu {
+			regulator-name = "vsram_gpu";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+		};
+
+		vsram_others: ldo-vsram-others {
+			regulator-name = "vsram_others";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+		};
+
+		vsram_proc11: ldo-vsram-proc11 {
+			regulator-name = "vsram_proc11";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+		};
+
+		vsram_proc12: ldo-vsram-proc12 {
+			regulator-name = "vsram_proc12";
+			regulator-min-microvolt = <500000>;
+			regulator-max-microvolt = <1293750>;
+		};
+
+		vxo22: ldo-vxo22 {
+			regulator-name = "vxo22";
+			regulator-min-microvolt = <2200000>;
+			regulator-max-microvolt = <2200000>;
+			regulator-always-on;
+		};
+
+		va12: ldo-va12 {
+			regulator-name = "va12";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
 		};
 	};
 };
