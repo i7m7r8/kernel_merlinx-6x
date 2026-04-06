@@ -98,15 +98,26 @@ jobs:
 
           # Get AnyKernel3 template
           git clone --depth=1 https://github.com/osm0sis/AnyKernel3.git ak3-tmp
+
+          # Copy FULL AnyKernel3 structure (META-INF, tools, anykernel.sh, ramdisk, etc.)
           cp -r ak3-tmp/META-INF .
-          cp ak3-tmp/anykernel.sh .
+          cp -r ak3-tmp/tools .
+          cp -r ak3-tmp/ramdisk .
+          cp ak3-tmp/LICENSE .
+          cp ak3-tmp/README.md .
           rm -rf ak3-tmp
+
+          # Create placeholder directories
+          mkdir -p modules/system/lib/modules
+          mkdir -p patch
+          touch modules/system/lib/modules/placeholder
+          touch patch/placeholder
 
           # Copy kernel Image
           if [ -f ../build/arch/arm64/boot/Image ]; then
             cp ../build/arch/arm64/boot/Image .
           elif [ -f ../build/arch/arm64/boot/Image.gz ]; then
-            cp ../build/arch/arm64/boot/Image.gz Image.gz
+            cp ../build/arch/arm64/boot/Image.gz .
           else
             echo "No kernel image found!"
             exit 1
@@ -115,24 +126,56 @@ jobs:
           # Copy DTB
           cp ../build/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dtb . 2>/dev/null || true
 
-          # Write anykernel.sh - no leading spaces
-          printf '%s\n' \
-            'kernel.string=MerlinX-Kernel-6.12' \
-            'do.devicecheck=0' \
-            'do.modules=0' \
-            'do.systemless=1' \
-            'do.cleanup=1' \
-            'do.cleananykernel=1' \
-            'name=Image' \
-            'slotselect=0' \
-            'patch_vbmeta_flag=0' \
-            'BLOCK=/dev/block/bootdevice/by-name/boot' \
-            > anykernel.sh
+          # Write proper anykernel.sh that sources ak3-core.sh and calls dump_boot/write_boot
+          cat > anykernel.sh << 'AK3EOF'
+          ### AnyKernel3 Ramdisk Mod Script
+          ## osm0sis @ xda-developers
+
+          ### AnyKernel setup
+          # begin properties
+          properties() { '
+          kernel.string=MerlinX-Kernel-6.12
+          do.devicecheck=0
+          do.modules=0
+          do.systemless=1
+          do.cleanup=1
+          do.cleanuponabort=0
+          device.name1=merlin
+          supported.versions=
+          supported.patchlevels=
+          '; } # end properties
+
+          ### AnyKernel install
+          # begin attributes
+          attributes() {
+          	set_perm_recursive 0 0 755 644 $ramdisk/*;
+          	set_perm_recursive 0 0 750 750 $ramdisk/init* $ramdisk/sbin;
+          } # end attributes
+
+
+          ## boot shell variables
+          block=/dev/block/bootdevice/by-name/boot;
+          is_slot_device=0;
+          ramdisk_compression=auto;
+          patch_vbmeta_flag=auto;
+
+          # import functions/variables and setup patching - see for reference (DO NOT REMOVE)
+          . tools/ak3-core.sh && attributes;
+
+          # boot install
+          dump_boot; # use split_boot to skip ramdisk unpack, e.g. for devices with init_boot ramdisk
+
+          write_boot; # use flash_boot to skip ramdisk repack, e.g. for devices with init_boot ramdisk
+          ## end boot install
+          AK3EOF
+
+          # Fix any leading whitespace in anykernel.sh (TWRP parser is strict)
+          sed -i 's/^[[:space:]]*//g' anykernel.sh
 
           cat anykernel.sh
 
-          # Create zip
-          zip -r9 ../MerlinX-Kernel-6.12.zip * META-INF/.* 2>/dev/null
+          # Create zip (include hidden files in META-INF)
+          zip -r9 ../MerlinX-Kernel-6.12.zip * .[!.]* META-INF/.* 2>/dev/null || zip -r9 ../MerlinX-Kernel-6.12.zip *
           cd ..
           ls -lh MerlinX-Kernel-6.12.zip
           unzip -l MerlinX-Kernel-6.12.zip
