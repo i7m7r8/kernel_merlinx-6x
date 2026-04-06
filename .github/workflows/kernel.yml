@@ -70,6 +70,7 @@ jobs:
           echo "build_time=$((END - START))s" >> $GITHUB_OUTPUT
           echo "Build done in $((END - START))s"
 
+      - name: Package Firmware
         if: success()
         run: |
           echo "=== Packaging firmware ==="
