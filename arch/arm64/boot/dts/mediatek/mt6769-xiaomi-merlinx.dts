@@ -462,14 +462,15 @@
 	};
 };
 
-/* UART1 - GPS */
+/* UART1 - GPS (disabled on merlinx - integrated via modem) */
 &uart1 {
-	status = "okay";
+	status = "disabled";
 
 	gnss {
 		compatible = "mediatek,gnss";
 		vdd-supply = <&vcn28>;
 		vddio-supply = <&vcn18>;
+		status = "disabled";
 	};
 };
 &uart2 {

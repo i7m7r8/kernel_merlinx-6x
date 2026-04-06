@@ -527,15 +527,7 @@
 			reg = <0 0x1a040000 0 0x1000>;
 		};
 
-		/* WiFi node */
-		wifi: wifi@18000000 {
-			compatible = "mediatek,mt7663s";
-			reg = <0 0x18000000 0 0x200000>;
-			interrupt-parent = <&pinctrl>;
-			interrupts = <146 IRQ_TYPE_LEVEL_LOW>;
-			status = "disabled";
-		};
-
+		/* WiFi reserve memory for firmware */
 		wifi_reserve_memory: wifi-reserve-memory {
 			reg = <0 0x18000000 0 0x200000>;
 			no-map;
@@ -726,7 +718,7 @@
 			clock-names = "scp";
 			interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
 			sram_size = <0x80000>;
-			status = "disabled";
+			status = "okay";
 		};
 
 		/* AFE PCM - Audio Front End */
@@ -736,7 +728,7 @@
 			interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_LOW>;
 			clocks = <&clk26m>;
 			clock-names = "audio";
-			status = "disabled";
+			status = "okay";
 		};
 
 		/* MFG - 3D Graphics config */
