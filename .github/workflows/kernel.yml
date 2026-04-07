@@ -36,7 +36,7 @@ jobs:
           cp patches/drivers/pinctrl/mediatek/pinctrl-mt6768.c kernel/drivers/pinctrl/mediatek/
           echo 'obj-$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o' >> kernel/drivers/pinctrl/mediatek/Makefile
           # Apply mt6358-regulator NULL pointer fix (prevents bootloop crash)
-          patch -p1 -d kernel < patches/001-mt6358-regulator-fix-null-deref.patch
+          patch -p1 -d kernel < patches/patches/001-mt6358-regulator-fix-null-deref.patch
           cp patches/arch/arm64/boot/dts/mediatek/mt6768.dtsi kernel/arch/arm64/boot/dts/mediatek/
           cp patches/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dts kernel/arch/arm64/boot/dts/mediatek/
           echo 'dtb-$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb' >> kernel/arch/arm64/boot/dts/mediatek/Makefile
