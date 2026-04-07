@@ -1508,6 +1508,8 @@ static const struct mtk_scp_of_data *mt8195_of_data_cores[] = {
 };
 
 static const struct of_device_id mtk_scp_of_match[] = {
+	{ .compatible = "mediatek,mt6768-scp", .data = &mt8183_of_data },
+	{ .compatible = "mediatek,mt6779-scp", .data = &mt8183_of_data },
 	{ .compatible = "mediatek,mt8183-scp", .data = &mt8183_of_data },
 	{ .compatible = "mediatek,mt8186-scp", .data = &mt8186_of_data },
 	{ .compatible = "mediatek,mt8188-scp", .data = &mt8188_of_data },

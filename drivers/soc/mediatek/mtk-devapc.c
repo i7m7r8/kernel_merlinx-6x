@@ -244,6 +244,9 @@ static const struct of_device_id mtk_devapc_dt_match[] = {
 		.compatible = "mediatek,mt6779-devapc",
 		.data = &devapc_mt6779,
 	}, {
+		.compatible = "mediatek,mt6768-devapc",
+		.data = &devapc_mt6779,
+	}, {
 		.compatible = "mediatek,mt8186-devapc",
 		.data = &devapc_mt8186,
 	}, {
