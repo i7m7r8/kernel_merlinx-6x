@@ -45,7 +45,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang lld llvm gcc-aarch64-linux-gnu g++-aarch64-linux-gnu bison flex libssl-dev libelf-dev bc lzop libncurses5-dev libncurses-dev make zip ccache wget
+          sudo apt-get install -y clang lld llvm gcc-aarch64-linux-gnu g++-aarch64-linux-gnu bison flex libssl-dev libelf-dev bc lzop libncurses5-dev libncurses-dev make zip ccache wget patch
           ccache -o max_size=3G
 
       - name: Cache ccache
