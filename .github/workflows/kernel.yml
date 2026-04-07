@@ -35,8 +35,23 @@ jobs:
           done
           cp patches/drivers/pinctrl/mediatek/pinctrl-mt6768.c kernel/drivers/pinctrl/mediatek/
           echo 'obj-$(CONFIG_PINCTRL_MT6768) += pinctrl-mt6768.o' >> kernel/drivers/pinctrl/mediatek/Makefile
-          # Apply mt6358-regulator NULL pointer fix (prevents bootloop crash)
-          patch -p1 -d kernel < patches/patches/001-mt6358-regulator-fix-null-deref.patch
+          # Apply mt6358-regulator NULL pointer fix
+          python3 << 'EOF'
+import sys
+path = 'kernel/drivers/regulator/mt6358-regulator.c'
+with open(path) as f:
+    content = f.read()
+old = '\tint i, max_regulator, ret;\n\n\tswitch (mt6397->chip_id)'
+new = '\tint i, max_regulator, ret;\n\n\tif (!mt6397) {\n\t\tdev_err(&pdev->dev, "no MFD parent data - deferring probe\\n");\n\t\treturn -EPROBE_DEFER;\n\t}\n\n\tswitch (mt6397->chip_id)'
+if old in content:
+    content = content.replace(old, new)
+    with open(path, 'w') as f:
+        f.write(content)
+    print('SUCCESS: mt6358 NULL check patch applied')
+else:
+    print('ERROR: Could not find patch location')
+    sys.exit(1)
+EOF
           cp patches/arch/arm64/boot/dts/mediatek/mt6768.dtsi kernel/arch/arm64/boot/dts/mediatek/
           cp patches/arch/arm64/boot/dts/mediatek/mt6769-xiaomi-merlinx.dts kernel/arch/arm64/boot/dts/mediatek/
           echo 'dtb-$(CONFIG_ARCH_MEDIATEK) += mt6769-xiaomi-merlinx.dtb' >> kernel/arch/arm64/boot/dts/mediatek/Makefile
