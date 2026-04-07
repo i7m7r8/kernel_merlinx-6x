@@ -17,7 +17,7 @@
 	#size-cells = <2>;
 
 	chosen {
-		bootargs = "console=ttyS0,921600n1 earlycon=uart8250,mmio32,0x11002000,921600n8";
+		bootargs = "console=ttyS0,921600n1 earlycon=uart8250,mmio32,0x11002000,921600n8 root=/dev/ram vmalloc=496M swiotlb=1024 cgroup.memory=nokmem firmware_class.path=/vendor/firmware loop.max_part=16";
 		stdout-path = "uart0:921600n8";
 	};
 
