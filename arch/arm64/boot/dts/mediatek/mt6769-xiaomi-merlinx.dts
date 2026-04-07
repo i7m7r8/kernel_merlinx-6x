@@ -695,11 +695,11 @@
 	};
 };
 
-/* GPU */
+/* GPU - disabled until clock infrastructure is ready */
 &mali {
 	clocks = <&topckgen CLK_TOP_MMPLL>;
 	clock-names = "gpu";
-	status = "okay";
+	status = "disabled";
 };
 
 /* Camera sensor interface */

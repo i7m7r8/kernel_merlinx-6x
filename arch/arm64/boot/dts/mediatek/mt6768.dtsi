@@ -599,20 +599,22 @@
 			status = "disabled";
 		};
 
-		infracfg: syscon@10001000 {
-			compatible = "mediatek,mt6769z-infracfg", "mediatek,mt6769-infracfg", "mediatek,mt6768-infracfg",
-				     "syscon";
+		infracfg: clock-controller@10001000 {
+			compatible = "mediatek,mt6769z-infracfg", "mediatek,mt6768-infracfg", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
+			#clock-cells = <1>;
 		};
 
-		topckgen: syscon@10000000 {
+		topckgen: clock-controller@10000000 {
 			compatible = "mediatek,mt6769z-topckgen", "mediatek,mt6769-topckgen", "mediatek,mt6768-topckgen", "syscon";
 			reg = <0 0x10000000 0 0x1000>;
+			#clock-cells = <1>;
 		};
 
-		apmixedsys: syscon@1000c000 {
+		apmixedsys: clock-controller@1000c000 {
 			compatible = "mediatek,mt6769z-apmixedsys", "mediatek,mt6769-apmixedsys", "mediatek,mt6768-apmixedsys", "syscon";
 			reg = <0 0x1000c000 0 0x1000>;
+			#clock-cells = <1>;
 		};
 
 		scpsys: syscon@10006000 {
@@ -769,6 +771,8 @@
 			compatible = "mediatek,mt6768-pwrap";
 			reg = <0 0x1000d000 0 0x1000>;
 			interrupts = <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&infracfg CLK_INFRA_PMIC_WRAP>;
+			clock-names = "spi";
 
 			pmic: mt6358 {
 				compatible = "mediatek,mt6358";

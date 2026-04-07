@@ -688,6 +688,11 @@ static int mt6358_regulator_probe(struct platform_device *pdev)
 	const struct mt6358_regulator_info *mt6358_info;
 	int i, max_regulator, ret;
 
+	if (!mt6397) {
+		dev_err(&pdev->dev, "no MFD parent data - deferring probe\n");
+		return -EPROBE_DEFER;
+	}
+
 	switch (mt6397->chip_id) {
 	case MT6358_CHIP_ID:
 		max_regulator = MT6358_MAX_REGULATOR;
